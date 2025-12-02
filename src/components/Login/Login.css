@@ -1,0 +1,336 @@
+.login-outer-container {
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+}
+
+.login-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 54px; /* Reduced height */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: none;
+  border-bottom: 5px solid #a57b0a; /* Move border to bottom */
+  background: #fff;
+  box-sizing: border-box;
+  padding: 0 1.2rem; /* Reduced padding */
+  z-index: 200;
+}
+
+.header-logo {
+  height: 36px; /* Reduced logo size */
+  width: auto;
+  margin-left: 1px; /* Reduced left margin */
+}
+
+.header-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Reduced gap between hamburger and logo */
+}
+
+.header-title {
+  font-size: 1.5rem; /* Slightly smaller */
+  font-weight: bold;
+  color: #a57b0a;
+  letter-spacing: 1px;
+  margin-left: 4px; /* Reduced margin */
+  font-family: 'Playfair Display', 'Times New Roman', serif; /* Stylish font */
+  font-style: italic;
+}
+
+.register-btn {
+  background: #a57b0a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem; /* Reduced padding */
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 4px; /* Reduced margin */
+  height: 36px; /* Match register button height */
+  display: flex;
+  align-items: center;
+}
+
+.register-btn:hover {
+  background: #fece34;
+  color: #222;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-btn {
+  background: #fff;
+  color: #a57b0a;
+  border: 2px solid #a57b0a;
+  border-radius: 6px;
+  padding: 0.4rem 1rem; /* Match register button */
+  font-size: 0.95rem; /* Match register button */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-right: 0; /* Match register button */
+  height: 36px; /* Match register button height */
+  display: flex;
+  align-items: center;
+}
+
+.admin-btn:hover {
+  background: #a57b0a;
+  color: #fff;
+}
+
+.login-container {
+  display: flex;
+  height: calc(100vh - 64px);
+  width: 100vw;
+}
+
+.login-image-section {
+  position: relative;
+  flex: 7;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.login-image {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: unset;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: none;
+  display: block;
+}
+
+.login-form-section {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+}
+
+.login-form {
+  width: 80%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-form h2 {
+  text-align: center;
+  color: #a57b0a;
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  background: #f9f9f9;
+}
+
+.input-icon {
+  margin-right: 0.7rem;
+  color: #a57b0a;
+  font-size: 2rem; /* Increased icon size */
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+}
+
+.login-btn {
+  background: #a57b0a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: #fece34;
+  color: #222;
+}
+
+.login-logo {
+  display: block;
+  margin: 0 auto 0.5rem auto;
+  width: 100px;
+  height: 100px;
+}
+
+.benefits-overlay {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem 1.5rem 2rem;
+  z-index: 2;
+  max-width: 340px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  text-align: left;
+}
+
+.benefits-overlay h3 {
+  margin-top: 0;
+  margin-bottom: 0.7rem;
+  font-size: 1.3rem;
+  color: #fece34;
+  font-weight: bold;
+}
+
+.benefits-overlay ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.benefits-overlay li {
+  margin-bottom: 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.forgot-password-link {
+  display: block;
+  margin: 0.5rem auto 0 auto;
+  text-align: center;
+  color: #a57b0a;
+  font-size: 0.98rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-password-link:hover {
+  color: #fece34;
+  text-decoration: underline;
+}
+
+.otp-input {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 1px solid #a57b0a;
+  border-radius: 6px;
+  outline: none;
+  font-family: 'Playfair Display', 'Times New Roman', serif;
+  margin-right: 0.5rem;
+}
+.otp-input:last-child {
+  margin-right: 0;
+}
+
+.otp-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.send-otp-btn, .verify-otp-btn, .save-btn {
+  background: #a57b0a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+  width: 100%;
+  display: block;
+}
+.send-otp-btn:disabled, .verify-otp-btn:disabled, .save-btn:disabled {
+  background: #ccc;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* Ensure new/confirm password fields look like login fields */
+.input-group input[type="password"] {
+  /* Remove font-family override so it matches the email/ID field */
+}
+
+.error-msg {
+  color: red;
+  margin-top: 0;
+  margin-bottom: 1px;
+  font-size: 0.7rem;
+  /* Optionally, add padding or font-weight if needed */
+}
+
+.user-circle {
+  width: 38px;
+  height: 38px;
+  background: #a57b0a;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-left: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: default;
+  user-select: none;
+  letter-spacing: 1px;
+}
+
+.header-hamburger {
+  background: none;
+  border: none;
+  color: #a57b0a; /* logo color theme */
+  font-size: 1.7rem; /* Slightly smaller icon */
+  cursor: pointer;
+  margin-right: -0.8rem; /* Reduced margin between hamburger and logo */
+  padding: 0.1rem 0.4rem; /* Slightly smaller padding */
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.header-hamburger:hover {
+  background: #f5e3b0; /* subtle highlight from logo theme */
+  color: #a57b0a;
+}
+
+/* Ensure content below header is not hidden */
+body, #root {
+  padding-top: 27px;
+}

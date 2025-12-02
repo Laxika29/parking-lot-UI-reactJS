@@ -1,0 +1,201 @@
+/* AdminDashboard.css - cleaned and fixed to remove stray braces and malformed rules */
+.admin-dashboard-container {
+  min-height: 100vh;
+  background: #f7f7f7;
+  padding: 0;
+}
+
+/* Make the content area stretch full width and remove the white card look */
+.admin-dashboard-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Remove inner white wrapper styles so tables and sections can span fully */
+.dashboard-table-wrapper {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  margin-top: 0;
+  padding: 10px;
+}
+
+.admin-dashboard-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.onboard-btn, .update-btn {
+  background: #a57b0a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.onboard-btn:hover, .update-btn:hover {
+  background: #fece34;
+  color: #222;
+}
+
+.admin-dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  font-size: 1rem;
+}
+.admin-dashboard-table th,
+.admin-dashboard-table td {
+  padding: 0.9rem 0.7rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+.admin-dashboard-table th {
+  background: rgba(243,230,194,0.9);
+  color: #a57b0a;
+  font-weight: bold;
+  font-size: 1.08rem;
+}
+
+.admin-dashboard-table th:last-child,
+.admin-dashboard-table td:last-child {
+  text-align: center;
+}
+
+.approve-btn, .reject-btn, .update-btn, .onboard-btn, .active-btn, .inactive-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-right: 0.7rem;
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+  min-width: 110px;
+  text-align: center;
+}
+.approve-btn { background: #4caf50; color: #fff;}
+.approve-btn:hover { background: #388e3c; }
+.reject-btn { background: #d32f2f; color: #fff; }
+.reject-btn:hover { background: #b71c1c; }
+.update-btn { background: #1976d2; color: #fff; }
+.update-btn:hover { background: #1565c0; }
+
+/* removed duplicate .active-btn/.inactive-btn block so they inherit unified button styles */
+
+.status-label {
+  font-weight: bold;
+  padding: 0.3rem 0.9rem;
+  border-radius: 5px;
+  font-size: 0.98rem;
+  text-transform: capitalize;
+}
+.status-label.approved { background: #e8f5e9; color: #388e3c; }
+.status-label.rejected { background: #ffebee; color: #b71c1c; }
+.row-approved td { background: #f6fff6; }
+.row-rejected td { background: #fff6f6; }
+
+/* Popup Overlay and Box */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(165, 123, 10, 0.25);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(165, 123, 10, 0.18);
+  padding: 2.2rem 2.5rem 2rem 2.5rem;
+  min-width: 380px;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 16px;
+  box-sizing: border-box;
+}
+.popup-box h3 {
+  color: #a57b0a;
+  font-family: 'Playfair Display', 'Times New Roman', serif;
+  font-size: 1.35rem;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  width: 100%;
+}
+.popup-form { display: flex; flex-direction: column; gap: 1.1rem; width: 100%; box-sizing: border-box; padding-left: 8px; padding-right: 8px; }
+.popup-form input {
+  padding: 0.7rem 1rem;
+  border: 1.5px solid #a57b0a;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9f7f2;
+  color: #222;
+  font-family: 'Playfair Display', 'Times New Roman', serif;
+  transition: border 0.2s;
+  margin-left: 0;
+  margin-right: 0;
+}
+.popup-form input:focus { border: 2px solid #fece34; outline: none; background: #fffbe6; }
+.popup-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 0.7rem; }
+.popup-cancel { background: #eee; color: #a57b0a; border: 1.5px solid #a57b0a; border-radius: 8px; padding: 0.6rem 1.2rem; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.popup-cancel:hover { background: #f3e6c2; color: #222; }
+.popup-create { background: #a57b0a; color: #fff; border: none; border-radius: 8px; padding: 0.6rem 1.2rem; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.popup-create:hover { background: #fece34; color: #222; }
+.popup-form input[type="number"]::-webkit-inner-spin-button,
+.popup-form input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.popup-form input[type="number"] { appearance: textfield; }
+.error-msg { color: #d32f2f; font-size: 0.95em; margin-top: 0; margin-bottom: 0.5rem; font-family: 'Playfair Display', 'Times New Roman', serif; }
+
+.dashboard-tabs-graphic {
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 2px solid rgba(224,224,224,0.6);
+  background: transparent;
+  padding: 0 24px;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+.tab-graphic {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px 8px 24px;
+  cursor: pointer;
+  color: #888;
+  font-weight: 500;
+  border: none;
+  background: none;
+  border-radius: 12px 12px 0 0;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  top: 2px;
+}
+.tab-graphic .tab-icon { width: 22px; height: 22px; display: inline-block; }
+.tab-graphic-active { background: transparent; color: #1976d2; border-bottom: 2px solid rgba(25,118,210,0.15); z-index: 3; }
+
+/* same-width-btn kept for specific places where fixed width is needed */
+.same-width-btn { min-width: 110px; max-width: 140px; }
+
+/* End of AdminDashboard.css */

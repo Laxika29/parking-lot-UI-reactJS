@@ -1,0 +1,185 @@
+/* EmployeeDashboard.css */
+.dashboard-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.employee-info {
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.dashboard-subtitle {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.check-in-btn, .subscription-btn {
+  background-color: #a57b0a;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.check-in-btn:hover, .subscription-btn:hover {
+  background-color: #8a670c;
+}
+
+.locked-vehicle-row {
+  background-color: #ffeded !important;
+}
+
+/* Lock button styling */
+.lock-btn {
+  background-color: #e0a800;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lock-btn:hover {
+  background-color: #c69500;
+}
+
+.lock-btn:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+/* Exit button styling */
+.exit-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.exit-btn:hover {
+  background-color: #218838;
+}
+
+.exit-btn:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+/* Details button styling */
+.details-btn {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.details-btn:hover {
+  background-color: #138496;
+}
+
+/* Unlock button styling */
+.unlock-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.unlock-btn:hover {
+  background-color: #c82333;
+}
+
+/* Lock reason display */
+.lock-reason-display {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.lock-reason-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.lock-reason-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Character counter */
+.char-counter {
+  text-align: right;
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.counter-error {
+  color: #dc3545;
+}
+
+/* Form textarea */
+.form-textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  resize: vertical;
+}
+
+/* Refresh button for available slots */
+.refresh-slots-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.refresh-slots-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Refresh icon styling */
+.refresh-slots-btn i {
+  color: #a57b0a;
+  font-size: 14px;
+}
+
+/* Spinning animation for the refresh icon */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.refresh-slots-btn:active i {
+  animation: spin 0.5s linear;
+}

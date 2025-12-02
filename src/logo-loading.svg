@@ -1,0 +1,26 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <g>
+        <!-- Static Circle -->
+        <path d="M58,168
+             a90,90 0 1,1 180,0
+             a90,90 0 1,1 -180,0"
+              fill="none" stroke="#a57b0a" stroke-width="22" stroke-dasharray="590 90"/>
+        <!-- Animated Orbit Tail (Arc with fading tail, moving clockwise) -->
+        <path id="orbit-tail"
+              d="M58,170 a90,90 0 1,1 180,0 a90,90 0 1,1 -180,0"
+              fill="none" stroke="#fece34" stroke-width="22" stroke-linecap="round"
+              stroke-dasharray="150 480" stroke-dashoffset="0">
+            <animate attributeName="stroke-dashoffset"
+                     values="0;-570"
+                     dur="1s"
+                     repeatCount="indefinite"/>
+            <animate attributeName="opacity"
+                     values="89;7.2;5"
+                     keyTimes="0;0.7;8.9;1"
+                     dur="1s"
+                     repeatCount="indefinite"/>
+        </path>
+        <text x="70" y="200" font-family="Times New Roman, serif" font-size="150" fill="#fece34" font-weight="bold">L</text>
+        <text x="120" y="230" font-family="Times New Roman, serif" font-size="150" fill="#fece34" font-weight="bold">X</text>
+    </g>
+</svg>

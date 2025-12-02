@@ -1,0 +1,6 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Perfect circle background for clarity -->
+  <circle cx="20" cy="20" r="20" fill="#fff"/>
+  <!-- Expanded Rupees symbol, visually covering more of the circle -->
+  <text x="20" y="26" text-anchor="middle" fill="#a57b0a" font-size="34" font-family="Arial" font-weight="bold" alignment-baseline="middle" dominant-baseline="central">₹</text>
+</svg>

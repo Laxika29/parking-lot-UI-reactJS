@@ -1,0 +1,110 @@
+.sidebar-container {
+  position: fixed;
+  top: 54px; /* height of header */
+  left: 0;
+  width: 213px;
+  min-width: 56px;
+  height: calc(100vh - 54px);
+  background: rgba(150, 123, 10, 0.9); /* transparent logo color shade */
+  color: #fff; /* best contrast for this background */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 12px rgba(25, 118, 210, 0.09);
+  z-index: 100;
+  transition: width 0.3s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+
+.sidebar-container.collapsed {
+  width: 82px !important;
+}
+
+/* Parking lot name styles */
+.parking-lot-name {
+  padding: 1.2rem 1.5rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.parking-lot-name-full {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffebb3;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.parking-lot-name-short {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffebb3;
+  letter-spacing: 1px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff; /* best contrast for sidebar background */
+  text-decoration: none;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-nav a:hover {
+  background: rgba(255,255,255,0.18); /* subtle light highlight on hover */
+  color: #f5e3b0; /* soft gold for hover */
+}
+
+/* Active link styles */
+.sidebar-nav a.active-link {
+  background: rgba(255,255,255,0.25); /* slightly brighter than hover state */
+  color: #ffebb3; /* brighter gold for active state */
+  font-weight: 500;
+  border-left: 4px solid #ffebb3; /* left border to indicate active state */
+  padding-left: calc(1.5rem - 4px); /* adjust padding to account for border */
+}
+
+.sidebar-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+/* Active icon styles */
+.sidebar-icon-wrapper.active-icon {
+  transform: scale(1.1); /* slightly larger icon */
+  transition: transform 0.2s ease;
+}
+
+.sidebar-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.sidebar-label {
+  white-space: nowrap;
+  transition: opacity 0.2s, width 0.2s;
+  opacity: 1;
+  width: auto;
+  overflow: visible;
+  display: inline-block;
+}
+
+.sidebar-container.collapsed .sidebar-label {
+  opacity: 0;
+  width: 0 !important;
+  overflow: hidden;
+  display: none;
+}

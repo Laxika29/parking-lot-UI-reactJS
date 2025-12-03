@@ -163,7 +163,7 @@ const Login = () => {
       if (res.ok && json && (json.token || json.userId)) {
         // Successful login with OTP
         CredentialStore.clear();
-        CredentialStore.setCredentials(email, '', json.employeeId || '', json.name || '', '');
+        CredentialStore.setCredentials(email, '', json.employeeId || '', json.name || '', json.parkingLotName || '');
         showToast('Login successful', 'success');
         setTimeout(() => navigate('/employee-dashboard'), 600);
       } else {
@@ -207,7 +207,7 @@ const Login = () => {
           parkingLotId: json.parkingLotId
         }));
         CredentialStore.clear();
-        CredentialStore.setCredentials(username, password, json.employeeId || '', json.name || '', json.parkingLot || '');
+        CredentialStore.setCredentials(username, password, json.employeeId || '', json.name || '', json.parkingLotName || '');
         // showToast('Login successful', 'success');
         setTimeout(() => navigate('/employee-dashboard'), 600);
       } else {
@@ -215,7 +215,7 @@ const Login = () => {
         const found = EMPLOYEE_CREDENTIALS.find(emp => emp.username === username && emp.password === password);
         if (found) {
           CredentialStore.clear();
-          CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLot);
+          CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLotName);
           setError('');
           navigate('/employee-dashboard');
         } else {
@@ -228,7 +228,7 @@ const Login = () => {
       const found = EMPLOYEE_CREDENTIALS.find(emp => emp.username === username && emp.password === password);
       if (found) {
         CredentialStore.clear();
-        CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLot);
+        CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLotName);
         setError('');
         navigate('/employee-dashboard');
       } else {

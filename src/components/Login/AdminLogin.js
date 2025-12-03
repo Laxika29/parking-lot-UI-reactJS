@@ -76,7 +76,7 @@ const AdminLogin = () => {
       if (resp.ok) {
         if (data && data.token) {
           // store only auth related info (no password)
-          localStorage.setItem('auth', JSON.stringify({
+          localStorage.setItem('admin-auth', JSON.stringify({
             token: data.token,
             tokenType: data.tokenType || 'Bearer',
             role: data.role,

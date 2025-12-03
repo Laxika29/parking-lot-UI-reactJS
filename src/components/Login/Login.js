@@ -199,9 +199,16 @@ const Login = () => {
       const json = await res.json();
       if (res.ok && json && (json.token || json.userId)) {
         // Successful login via password
+        localStorage.setItem('employee-auth', JSON.stringify({
+          token: json.token,
+          tokenType: json.tokenType || 'Bearer',
+          role: json.role,
+          userId: json.userId,
+          parkingLotId: json.parkingLotId
+        }));
         CredentialStore.clear();
         CredentialStore.setCredentials(username, password, json.employeeId || '', json.name || '', json.parkingLot || '');
-        showToast('Login successful', 'success');
+        // showToast('Login successful', 'success');
         setTimeout(() => navigate('/employee-dashboard'), 600);
       } else {
         // Fallback: optionally check local mock credentials for offline testing

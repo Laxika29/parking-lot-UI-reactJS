@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CredentialStore } from '../Login/Login';
 import Header from '../Header';
 import Sidebar from './Sidebar';
@@ -14,36 +14,14 @@ import ParkingBooking from './parking-booking/ParkingBooking';
 import Subscription from './subscription/Subscription';
 import LostComplaint from './lost-complaint/LostComplaint';
 
-// Mock vehicle details
-const VEHICLE_DETAILS = [
-	{
-		vehicleNumber: 'MH12AB1234',
-		vehicleType: 'Car',
-		entryTime: '2025-09-24 09:15',
-		allotedBy: 'John Doe',
-		exitBy: '',
-		fare: 120,
-		exitTime: '',
-		locked: false,
-	},
-	{
-		vehicleNumber: 'MH14XY5678',
-		vehicleType: 'Bike',
-		entryTime: '2025-09-24 10:05',
-		allotedBy: 'Jane Smith',
-		exitBy: '',
-		fare: 60,
-		exitTime: '',
-		locked: false,
-	},
-	// Add more vehicles as needed
-];
-
+// EmployeeDashboard component
 const EmployeeDashboard = () => {
 	const employeeName = CredentialStore.name;
 	const employeeId = CredentialStore.employeeId;
     const parkingLotName = CredentialStore.parkingLot || 'Candor Parking'; // Updated parking lot name
-	const [vehicles, setVehicles] = useState(VEHICLE_DETAILS);
+	const [vehicles, setVehicles] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState('');
 	const [showExitPopup, setShowExitPopup] = useState(false);
 	const [selectedVehicle, setSelectedVehicle] = useState(null);
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -65,7 +43,6 @@ const EmployeeDashboard = () => {
         subscriptionFrequency: 'Monthly'
     });
     const [subscriptionErrors, setSubscriptionErrors] = useState({});
-
     // Function to get subscription benefits based on type
     const getSubscriptionBenefits = (type) => {
         switch(type) {
@@ -458,6 +435,17 @@ const EmployeeDashboard = () => {
         return Object.keys(errors).length === 0;
     };
 
+    // Helper: handle 403 Forbidden responses
+    const handleForbidden = (resp) => {
+        if (resp && resp.status === 403) {
+            try { localStorage.removeItem('auth'); } catch (e) { /* ignore */ }
+            // route to login page (same-origin)
+            window.location.href = '/login';
+            return true; // indicate forbidden handled
+        }
+        return false;
+    };
+
     // Handle Subscription form submission
     const handleSubscriptionSubmit = () => {
         // Validate form
@@ -474,6 +462,36 @@ const EmployeeDashboard = () => {
         // Close the popup
         setShowSubscriptionPopup(false);
     };
+
+    // Fetch currently parked vehicles from the API
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            setLoading(true);
+            setError('');
+            try {
+                const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : '';
+                const response = await fetch('/parkinglot/api/v1/fetch/dashboard/vehicles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setVehicles(data.parkedVehicleInfoList || []);
+            } catch (err) {
+                setError(err.message || 'Failed to fetch vehicles');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVehicles();
+    }, []);
 
 	return (
 		<Routes>
@@ -520,22 +538,22 @@ const EmployeeDashboard = () => {
 											<tr>
 												<th>Vehicle Number</th>
 												<th>Vehicle Type</th>
-												<th>Entry Time</th>
-												<th>Alloted By</th>
+												<th>Allotted By</th>
 												<th>Exit By</th>
+												<th>Entry Time</th>
 												<th>Action</th>
 											</tr>
 										</thead>
 										<tbody>
 											{vehicles.map((vehicle) => (
-												<tr key={vehicle.vehicleNumber} className={vehicle.locked ? 'locked-vehicle-row' : ''}>
+												<tr key={vehicle.parkingId} className={vehicle.vehicleLocked ? 'locked-vehicle-row' : ''}>
 													<td>{vehicle.vehicleNumber}</td>
 													<td>{vehicle.vehicleType}</td>
-													<td>{vehicle.entryTime}</td>
-													<td>{vehicle.allotedBy}</td>
+													<td>{vehicle.allocatedBy}</td>
 													<td>{vehicle.exitBy || '-'}</td>
+													<td>{vehicle.entryTime}</td>
 													<td style={{ textAlign: 'center' }}>
-                                                        {vehicle.locked ? (
+                                                        {vehicle.vehicleLocked ? (
                                                             // Show Details button if vehicle is locked
                                                             <button
                                                                 className="details-btn"

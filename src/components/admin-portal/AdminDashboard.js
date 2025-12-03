@@ -62,10 +62,10 @@ const buildApiPath = (path) => {
      return `${API_BASE}${p}`;
  };
 
-// Helper: robustly read auth token from localStorage. Supports JSON object or raw token string.
+// Helper: robustly read admin-auth token from localStorage. Supports JSON object or raw token string.
 const getAuthToken = () => {
     try {
-        const raw = localStorage.getItem('auth');
+        const raw = localStorage.getItem('admin-auth');
         if (!raw) return null;
         try {
             const parsed = JSON.parse(raw);
@@ -83,7 +83,7 @@ const getAuthToken = () => {
 // Helper: handle 403 Forbidden responses
 const handleForbidden = (resp) => {
     if (resp && resp.status === 403) {
-        try { localStorage.removeItem('auth'); } catch (e) { /* ignore */ }
+        try { localStorage.removeItem('admin-auth'); } catch (e) { /* ignore */ }
         // route to login page (same-origin)
         window.location.href = '/login';
         return true; // indicate forbidden handled
@@ -367,7 +367,6 @@ const AdminDashboard = () => {
 	 // state for update popup
 	 const [updatePopupOpen, setUpdatePopupOpen] = useState(false);
 	 const [selectedLot, setSelectedLot] = useState(null);
-	 const [updateLoading, setUpdateLoading] = useState(false);
 	 // Parking rates: mapping parkingLotId -> array of rate configs
 	 const [parkingRates, setParkingRates] = useState({});
 	 const [ratePopupOpen, setRatePopupOpen] = useState(false);
@@ -796,27 +795,34 @@ const AdminDashboard = () => {
 		 setSelectedLot(lot);
 		 setUpdatePopupOpen(true);
 	 };
-+
-+	// Open parking rate configuration popup
-+	const openRatePopup = (lot) => {
-+		setSelectedLotForRate(lot);
-+		setRatePopupOpen(true);
-+	};
-+
-+	const openViewRates = (lot) => {
-+		setSelectedLotForRate(lot);
-+		setViewRateOpen(true);
-+	};
-+
-+	const handleSaveRates = (ratesArray) => {
-+		if (!selectedLotForRate) return;
-+		setParkingRates(prev => ({ ...prev, [selectedLotForRate.id || selectedLotForRate.name]: ratesArray }));
-+		setRatePopupOpen(false);
-+		setViewRateOpen(false);
-+		setToast({ show: true, message: 'Rates saved successfully', type: 'success' });
-+	};
 
-	 // ...existing code continues ...
+	 // Open parking rate configuration popup
+	 const openRatePopup = (lot) => {
+		setSelectedLotForRate(lot);
+		setRatePopupOpen(true);
+	};
+
+	 const openViewRates = (lot) => {
+		setSelectedLotForRate(lot);
+		setViewRateOpen(true);
+	};
+
+	 const handleSaveRates = (ratesArray) => {
+		if (!selectedLotForRate) return;
+		setParkingRates(prev => ({ ...prev, [selectedLotForRate.id || selectedLotForRate.name]: ratesArray }));
+		setRatePopupOpen(false);
+		setViewRateOpen(false);
+		setToast({ show: true, message: 'Rates saved successfully', type: 'success' });
+	};
+
+	 // Define the handleUpdateParkingLot function to handle updates to parking lots.
+const handleUpdateParkingLot = (updatedLot) => {
+  setParkingLots((prevLots) =>
+    prevLots.map((lot) => (lot.id === updatedLot.id ? { ...lot, ...updatedLot } : lot))
+  );
+  setUpdatePopupOpen(false);
+  setToast({ show: true, message: 'Parking lot updated successfully', type: 'success' });
+};
 
 	 return (
 		<div className="admin-dashboard-container">
@@ -835,10 +841,10 @@ const AdminDashboard = () => {
 						<ParkingIcon className="tab-icon" />
 						<span>Parking Lot Details</span>
 					</div>
-+                <div className={`tab-graphic${activeTab === 'parking-rate' ? ' tab-graphic-active' : ''}`} onClick={() => setActiveTab('parking-rate')}>
-+                    <ParkingIcon className="tab-icon" />
-+                    <span>Parking Rate</span>
-+                </div>
+                <div className={`tab-graphic${activeTab === 'parking-rate' ? ' tab-graphic-active' : ''}`} onClick={() => setActiveTab('parking-rate')}>
+                    <ParkingIcon className="tab-icon" />
+                    <span>Parking Rate</span>
+                </div>
 				</div>
 				<div className="dashboard-table-wrapper">
 					<div className="admin-dashboard-actions" style={{ justifyContent: 'flex-end', marginBottom: '2rem' }}>
@@ -846,40 +852,40 @@ const AdminDashboard = () => {
 							Onboard New Parking
 						</button>
 					</div>
-+
-+					{activeTab === 'parking-rate' && (
-+						<>
-+							{parkingLoading ? (
-+								<div style={{ padding: 18 }}>Loading parking lots...</div>
-+							) : parkingError ? (
-+								<div style={{ padding: 18, color: 'red' }}>{parkingError}</div>
-+							) : parkingLots.length === 0 ? (
-+								<div style={{ padding: 18, fontWeight: 600 }}>No Parking Lots Found</div>
-+							) : (
-+								<table className="admin-dashboard-table">
-+									<thead>
-+										<tr>
-+											<th>Parking Lot Name</th>
-+											<th>Address</th>
-+											<th>Rate Actions</th>
-+										</tr>
-+									</thead>
-+									<tbody>
-+										{parkingLots.map(lot => (
-+											<tr key={lot.id || lot.name}>
-+												<td>{lot.name}</td>
-+												<td>{lot.address}</td>
-+												<td>
-+													<button className="approve-btn" onClick={() => openRatePopup(lot)}>Configure</button>
-+													<button className="update-btn" onClick={() => openViewRates(lot)}>View</button>
-+												</td>
-+											</tr>
-+										))}
-+									</tbody>
-+								</table>
-+							)}
-+						</>
-+					)}
+
+					{activeTab === 'parking-rate' && (
+						<>
+							{parkingLoading ? (
+								<div style={{ padding: 18 }}>Loading parking lots...</div>
+							) : parkingError ? (
+								<div style={{ padding: 18, color: 'red' }}>{parkingError}</div>
+							) : parkingLots.length === 0 ? (
+								<div style={{ padding: 18, fontWeight: 600 }}>No Parking Lots Found</div>
+							) : (
+								<table className="admin-dashboard-table">
+									<thead>
+										<tr>
+											<th>Parking Lot Name</th>
+											<th>Address</th>
+											<th>Rate Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										{parkingLots.map(lot => (
+											<tr key={lot.id || lot.name}>
+												<td>{lot.name}</td>
+												<td>{lot.address}</td>
+												<td>
+													<button className="approve-btn" onClick={() => openRatePopup(lot)}>Configure</button>
+													<button className="update-btn" onClick={() => openViewRates(lot)}>View</button>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							)}
+						</>
+					)}
 
 					{activeTab === 'onboard' && (
 						<>
@@ -1033,34 +1039,39 @@ const AdminDashboard = () => {
 						</>
 					)}
 				</div>
-				<UpdateParkingLotPopup open={updatePopupOpen} onClose={() => setUpdatePopupOpen(false)} initialLot={selectedLot} onUpdate={handleUpdateParkingLot} updateLoading={updateLoading} />
+				<UpdateParkingLotPopup open={updatePopupOpen} onClose={() => setUpdatePopupOpen(false)} initialLot={selectedLot} onUpdate={handleUpdateParkingLot} />
 				<NewParkingLotPopup open={popupOpen} onClose={() => setPopupOpen(false)} onCreate={handleCreateParkingLot} createLoading={createLoading} />
-+				{ratePopupOpen && <ParkingRatePopup open={ratePopupOpen} onClose={() => setRatePopupOpen(false)} lot={selectedLotForRate} existing={parkingRates[selectedLotForRate && (selectedLotForRate.id || selectedLotForRate.name)] || []} onSave={handleSaveRates} />}
-+				{viewRateOpen && selectedLotForRate && (
-+					<>
-+						<div className="popup-overlay">
-+							<div className="popup-box small">
-+								<h3>Rates - {selectedLotForRate.name}</h3>
-+								{(parkingRates[selectedLotForRate.id || selectedLotForRate.name] || []).length === 0 ? (
-+									<div style={{ padding: 12 }}>No rates configured</div>
-+								) : (
-+									<table style={{ width: '100%' }}>
-+										<thead><tr><th>Frequency</th><th>Bike</th><th>Car</th><th>Heavy</th></tr></thead>
-+										<tbody>
-+											{(parkingRates[selectedLotForRate.id || selectedLotForRate.name] || []).map((r, idx) => (
-+												<tr key={idx}><td>{r.freq}</td><td>{r.bike}</td><td>{r.car}</td><td>{r.heavy}</td></tr>
-+											))}
-+										</tbody>
-+									</table>
-+								)}
-+								<div style={{ marginTop: 12 }}>
-+									<button className="popup-cancel" onClick={() => setViewRateOpen(false)}>Close</button>
-+									<button className="popup-create" onClick={() => { setViewRateOpen(false); setRatePopupOpen(true); }}>Edit</button>
-+								</div>
-+							</div>
-+						</div>
-+					</>
-+				)}
+				{ratePopupOpen && <ParkingRatePopup open={ratePopupOpen} onClose={() => setRatePopupOpen(false)} lot={selectedLotForRate} existing={parkingRates[selectedLotForRate && (selectedLotForRate.id || selectedLotForRate.name)] || []} onSave={handleSaveRates} />}
+				{viewRateOpen && selectedLotForRate && (
+					<>
+						<div className="popup-overlay">
+							<div className="popup-box small">
+								<h3>Rates - {selectedLotForRate.name}</h3>
+								{(parkingRates[selectedLotForRate.id || selectedLotForRate.name] || []).length === 0 ? (
+									<div style={{ padding: 12 }}>No rates configured</div>
+								) : (
+									<table style={{ width: '100%' }}>
+										<thead><tr><th>Frequency</th><th>Bike</th><th>Car</th><th>Heavy</th></tr></thead>
+										<tbody>
+											{(parkingRates[selectedLotForRate.id || selectedLotForRate.name] || []).map((r, idx) => (
+												<tr key={idx}>
+													<td>{r.freq}</td>
+													<td>{r.bike}</td>
+													<td>{r.car}</td>
+													<td>{r.heavy}</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+								)}
+								<div style={{ marginTop: 12 }}>
+									<button className="popup-cancel" onClick={() => setViewRateOpen(false)}>Close</button>
+									<button className="popup-create" onClick={() => { setViewRateOpen(false); setRatePopupOpen(true); }}>Edit</button>
+								</div>
+							</div>
+						</div>
+					</>
+				)}
 				<Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
 			</div>
 		</div>

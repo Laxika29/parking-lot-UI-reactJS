@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { CredentialStore } from '../Login/Login';
+import React, {useState, useEffect} from 'react';
+import {CredentialStore} from '../Login/Login';
 import Header from '../Header';
 import Sidebar from './Sidebar';
 import './EmployeeDashboard.css';
 import './Dashboard.css'; // Import Dashboard-specific CSS
 import '../dashboard/parking-history/ParkingHistory.css'; // Import ParkingHistory CSS for consistent styling
-import { QRCodeSVG } from 'qrcode.react';
-import { Routes, Route } from 'react-router-dom';
+import {QRCodeSVG} from 'qrcode.react';
+import {Routes, Route} from 'react-router-dom';
 import ParkingHistory from './parking-history/ParkingHistory';
 import ParkingStatus from './parking-status/ParkingStatus';
 import FareDetails from './fare-details/FareDetails';
@@ -17,17 +17,17 @@ import Toast from "../Toast";
 
 // EmployeeDashboard component
 const EmployeeDashboard = () => {
-	const employeeName = CredentialStore.name;
-	const employeeId = CredentialStore.employeeId;
+    const employeeName = CredentialStore.name;
+    const employeeId = CredentialStore.employeeId;
     const parkingLotName = CredentialStore.parkingLot || 'LX Parking'; // Updated parking lot name
-	const [vehicles, setVehicles] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState('');
-    const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
-	const [showExitPopup, setShowExitPopup] = useState(false);
-	const [selectedVehicle, setSelectedVehicle] = useState(null);
-	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-	const [paymentMethod, setPaymentMethod] = useState('CASH');
+    const [vehicles, setVehicles] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [toast, setToast] = useState({show: false, message: '', type: 'info'});
+    const [showExitPopup, setShowExitPopup] = useState(false);
+    const [selectedVehicle, setSelectedVehicle] = useState(null);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('CASH');
     const [showCheckInPopup, setShowCheckInPopup] = useState(false);
 
     // New state for lock functionality
@@ -47,7 +47,7 @@ const EmployeeDashboard = () => {
     const [subscriptionErrors, setSubscriptionErrors] = useState({});
     // Function to get subscription benefits based on type
     const getSubscriptionBenefits = (type) => {
-        switch(type) {
+        switch (type) {
             case 'PREMIUM':
                 return [
                     "Priority parking spots",
@@ -82,7 +82,7 @@ const EmployeeDashboard = () => {
         let baseRate;
 
         // Set base rate according to vehicle type
-        switch(vehicleType) {
+        switch (vehicleType) {
             case 'Bike':
                 baseRate = 500; // Base rate for bike
                 break;
@@ -101,7 +101,7 @@ const EmployeeDashboard = () => {
 
         // Multiply by subscription type factor
         let typeFactor;
-        switch(type) {
+        switch (type) {
             case 'PREMIUM':
                 typeFactor = 1.2; // 20% premium
                 break;
@@ -119,7 +119,7 @@ const EmployeeDashboard = () => {
         let frequencyFactor;
         let months;
 
-        switch(frequency) {
+        switch (frequency) {
             case 'Monthly':
                 months = 1;
                 frequencyFactor = 1; // No discount for monthly
@@ -190,7 +190,7 @@ const EmployeeDashboard = () => {
             const data = await response.json();
 
             if (data.status === 1) {
-                setToast({ show: true, message: data.message || `Something went wrong`, type: 'error' });
+                setToast({show: true, message: data.message || `Something went wrong`, type: 'error'});
                 return;
             }
             // Update available slots based on the response
@@ -210,7 +210,7 @@ const EmployeeDashboard = () => {
 
     // Handle form field changes
     const handleCheckInFormChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         // Convert vehicle number to uppercase
         const processedValue = name === 'vehicleNumber' ? value.toUpperCase() : value;
@@ -294,7 +294,7 @@ const EmployeeDashboard = () => {
 
             // Check if status is 1 and show toast message
             if (data.status === 1) {
-                setToast({ show: true, message: data.message || 'An error occurred', type: 'error' });
+                setToast({show: true, message: data.message || 'An error occurred', type: 'error'});
                 return;
             }
 
@@ -318,39 +318,41 @@ const EmployeeDashboard = () => {
         } catch (error) {
             handleApiError(error, setToast);
         } finally {
+            await fetchVehicles();
             setLoading(false); // Set loading to false after the API call
         }
     };
 
-	const handleExitClick = (vehicle) => {
-		// Set exit time to now for demo
-		setSelectedVehicle({ ...vehicle, exitTime: new Date().toLocaleString() });
-		setShowExitPopup(true);
-	};
+    const handleExitClick = (vehicle) => {
+        // Set exit time to now for demo
+        setSelectedVehicle({...vehicle, exitTime: new Date().getHours()});
+        setShowExitPopup(true);
+    };
 
-	const handleConfirmExit = () => {
-		// Update vehicle exitBy and exitTime
-		setVehicles(
-			vehicles.map((v) =>
-				v.vehicleNumber === selectedVehicle.vehicleNumber
-					? {
-                      ...v,
-                      exitBy: employeeName.split('@')[0], // Remove domain part from email
-                      exitTime: selectedVehicle.exitTime,
-                  }
-					: v
-			)
-		);
-		setShowExitPopup(false);
-		setSelectedVehicle(null);
-	};
+    const handleConfirmExit = () => {
+        // Update vehicle exitBy and exitTime
+        setVehicles(
+            vehicles.map((v) =>
+                v.vehicleNumber === selectedVehicle.vehicleNumber
+                    ? {
+                        ...v,
+                        exitBy: employeeName.split('@')[0], // Remove domain part from email
+                        exitTime: selectedVehicle.exitTime,
+                    }
+                    : v
+            )
+        );
+        setShowExitPopup(false);
+        setSelectedVehicle(null);
+    };
 
-	function getGreeting() {
-		const hour = new Date().getHours();
-		if (hour < 12) return 'Good Morning';
-		if (hour < 17) return 'Good Afternoon';
-		return 'Good Evening';
-	}
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 17) return 'Good Afternoon';
+        return 'Good Evening';
+    }
+
     // Handle Check In button click
     const handleCheckInClick = () => {
         setShowCheckInPopup(true);
@@ -379,8 +381,8 @@ const EmployeeDashboard = () => {
         }
     };
 
-    // Handle Lock confirmation
-    const handleLockConfirm = () => {
+    // Function to handle vehicle lock confirmation
+    const handleLockConfirm = async () => {
         // Validate lock reason (minimum 30 characters)
         if (!lockReason.trim()) {
             setLockReasonError('Please provide a reason for locking the vehicle');
@@ -390,20 +392,49 @@ const EmployeeDashboard = () => {
             return;
         }
 
-        // Update vehicle locked status
-        setVehicles(
-            vehicles.map((v) =>
-                v.vehicleNumber === selectedVehicle.vehicleNumber
-                    ? { ...v, locked: true, lockReason: lockReason, lockedBy: employeeName, lockTime: new Date().toLocaleString() }
-                    : v
-            )
-        );
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
 
-        // Close popup and reset fields
-        setShowLockPopup(false);
-        setLockReason('');
-        setCharCount(0);
-        setSelectedVehicle(null);
+        const lockPayload = {
+            parkingId: selectedVehicle.parkingId,
+            lockReason: lockReason.trim(),
+            paymentMode: null,
+            paymentAmount: null
+        };
+
+        setLoading(true); // Set loading to true before the API call
+        try {
+            const response = await fetch('/parkinglot/api/v1/lock/vehicle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(lockPayload),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setToast({show: true, message: data.message || 'Vehicle locked successfully', type: 'success'});
+
+                // Fetch updated vehicle list after locking
+
+                // Close popup and reset fields
+                setShowLockPopup(false);
+                setLockReason('');
+                setCharCount(0);
+                setSelectedVehicle(null);
+            } else {
+                setToast({show: true, message: data.message || 'Failed to lock vehicle', type: 'error'});
+            }
+        } catch (error) {
+            console.error('Error locking vehicle:', error);
+            setToast({show: true, message: 'An unexpected error occurred while locking the vehicle', type: 'error'});
+        } finally {
+            await fetchVehicles();
+            setLoading(false);
+            // Set loading to false after the API call
+        }
     };
 
     // Handle Details button click (for locked vehicles)
@@ -432,7 +463,7 @@ const EmployeeDashboard = () => {
                         unlockBy: employeeName,
                         unlockPaymentMethod: unlockPaymentMethod,
                         unlockFee: unlockFee
-                      }
+                    }
                     : v
             )
         );
@@ -456,7 +487,7 @@ const EmployeeDashboard = () => {
 
     // Handle Subscription form field change
     const handleSubscriptionFormChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         setSubscriptionData(prevData => ({
             ...prevData,
@@ -495,7 +526,10 @@ const EmployeeDashboard = () => {
     // Helper: handle 403 Forbidden responses
     const handleForbidden = (resp) => {
         if (resp && resp.status === 403) {
-            try { localStorage.removeItem('auth'); } catch (e) { /* ignore */ }
+            try {
+                localStorage.removeItem('auth');
+            } catch (e) { /* ignore */
+            }
             // route to login page (same-origin)
             window.location.href = '/login';
             return true; // indicate forbidden handled
@@ -609,32 +643,74 @@ const EmployeeDashboard = () => {
         }
     };
 
-	return (
-		<Routes>
-			<Route path="/*" element={
-				<div>
-					<Header
-						user={{ name: employeeName, employeeId: employeeId }}
-						showAdmin={false}
-						showRegister={false}
-						onHamburgerClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
-					/>
-					<Sidebar collapsed={sidebarCollapsed} />
-					<Routes>
-						<Route path="parking-history" element={<ParkingHistory sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="fare-details" element={<FareDetails sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="parking-booking" element={<ParkingBooking sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="subscription" element={<Subscription sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="lost-complaint" element={<LostComplaint sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="parking-status" element={<ParkingStatus sidebarCollapsed={sidebarCollapsed} />} />
-						<Route path="/" element={
-							<div className={`parking-history-container ${sidebarCollapsed ? 'collapsed' : 'expanded'}`}>
-								<h2 className="dashboard-title">{getGreeting()}, {employeeName || 'Employee'}!</h2>
-								<div className="employee-info">
+    const fetchVehicles = async () => {
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('/parkinglot/api/v1/fetch/dashboard/vehicles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 403) {
+                    console.error('Access forbidden: Invalid token or insufficient permissions.');
+                    localStorage.removeItem('employee-auth');
+                    window.location.href = '/login';
+                    return;
+                }
+                const errorText = await response.text();
+                console.error(`Error: ${response.status}`, errorText);
+                throw new Error(`Error: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            setVehicles(data.parkedVehicleInfoList || []);
+        } catch (error) {
+            console.error('Fetch error details:', error);
+            if (error.message.includes('CORS')) {
+                console.error('CORS error: Ensure the backend allows requests from this origin.');
+                setError('CORS error: Unable to fetch vehicles.');
+            } else {
+                setError(error.message || 'Failed to fetch vehicles');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Routes>
+            <Route path="/*" element={
+                <div>
+                    <Header
+                        user={{name: employeeName, employeeId: employeeId}}
+                        showAdmin={false}
+                        showRegister={false}
+                        onHamburgerClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+                    />
+                    <Sidebar collapsed={sidebarCollapsed}/>
+                    <Routes>
+                        <Route path="parking-history" element={<ParkingHistory sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="fare-details" element={<FareDetails sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="parking-booking" element={<ParkingBooking sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="subscription" element={<Subscription sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="lost-complaint" element={<LostComplaint sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="parking-status" element={<ParkingStatus sidebarCollapsed={sidebarCollapsed}/>}/>
+                        <Route path="/" element={
+                            <div className={`parking-history-container ${sidebarCollapsed ? 'collapsed' : 'expanded'}`}>
+                                <h2 className="dashboard-title">{getGreeting()}, {employeeName || 'Employee'}!</h2>
+                                <div className="employee-info">
 									<span>
 										<b>Employee ID:</b> {employeeId || '-'}
 									</span>
-								</div>
+                                </div>
 
                                 <div className="dashboard-actions">
                                     <h3 className="dashboard-subtitle">Vehicle Details</h3>
@@ -642,138 +718,149 @@ const EmployeeDashboard = () => {
                                         <button className="check-in-btn" onClick={handleCheckInClick}>
                                             Check In
                                         </button>
-                                        <button className="subscription-btn" onClick={handleSubscriptionClick} style={{ marginLeft: '10px' }}>
+                                        <button className="subscription-btn" onClick={handleSubscriptionClick}
+                                                style={{marginLeft: '10px'}}>
                                             Activate Subscription
                                         </button>
                                     </div>
                                 </div>
 
-								<div className="table-wrapper">
-									<table className="parking-history-table">
-										<thead>
-											<tr>
-												<th>Vehicle Number</th>
-												<th>Vehicle Type</th>
-												<th>Allotted By</th>
-												<th>Entry Time</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											{vehicles.map((vehicle) => (
-												<tr key={vehicle.parkingId} className={vehicle.vehicleLocked ? 'locked-vehicle-row' : ''}>
-													<td>{vehicle.vehicleNumber}</td>
-													<td>{vehicle.vehicleType}</td>
-													<td>{vehicle.allocatedBy}</td>
-													<td>{vehicle.entryTime}</td>
-													<td style={{ textAlign: 'center' }}>
-                                                        {vehicle.vehicleLocked ? (
-                                                            // Show Details button if vehicle is locked
+                                <div className="table-wrapper">
+                                    <table className="parking-history-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Vehicle Number</th>
+                                            <th>Vehicle Type</th>
+                                            <th>Allotted By</th>
+                                            <th>Entry Time</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {vehicles.map((vehicle) => (
+                                            <tr key={vehicle.parkingId}
+                                                className={vehicle.vehicleLocked ? 'locked-vehicle-row' : ''}>
+                                                <td>{vehicle.vehicleNumber}</td>
+                                                <td>{vehicle.vehicleType}</td>
+                                                <td>{vehicle.allocatedBy}</td>
+                                                <td>{vehicle.entryTime}</td>
+                                                <td style={{textAlign: 'center'}}>
+                                                    {vehicle.vehicleLocked ? (
+                                                        // Show Details button if vehicle is locked
+                                                        <button
+                                                            className="details-btn"
+                                                            onClick={() => handleDetailsClick(vehicle)}
+                                                        >
+                                                            Details
+                                                        </button>
+                                                    ) : (
+                                                        // Show Lock and Exit buttons if vehicle is not locked
+                                                        <>
                                                             <button
-                                                                className="details-btn"
-                                                                onClick={() => handleDetailsClick(vehicle)}
+                                                                className="lock-btn"
+                                                                style={{marginRight: '0.5rem'}}
+                                                                disabled={!!vehicle.exitBy}
+                                                                onClick={() => handleLockClick(vehicle)}
                                                             >
-                                                                Details
+                                                                Lock
                                                             </button>
-                                                        ) : (
-                                                            // Show Lock and Exit buttons if vehicle is not locked
-                                                            <>
-                                                                <button
-                                                                    className="lock-btn"
-                                                                    style={{ marginRight: '0.5rem' }}
-                                                                    disabled={!!vehicle.exitBy}
-                                                                    onClick={() => handleLockClick(vehicle)}
-                                                                >
-                                                                    Lock
-                                                                </button>
-                                                                <button
-                                                                    className="exit-btn"
-                                                                    disabled={!!vehicle.exitBy}
-                                                                    onClick={() => handleExitClick(vehicle)}
-                                                                >
-                                                                    Exit
-                                                                </button>
-                                                            </>
-                                                        )}
-													</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
-								</div>
+                                                            <button
+                                                                className="exit-btn"
+                                                                disabled={!!vehicle.exitBy}
+                                                                onClick={() => handleExitClick(vehicle)}
+                                                            >
+                                                                Exit
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-								{/* Exit Popup */}
-								{showExitPopup && selectedVehicle && (
-									<>
-										<div className="exit-popup-overlay" onClick={() => setShowExitPopup(false)}></div>
-										<div className="exit-popup-card logo-theme">
-											<span className="exit-popup-close" onClick={() => setShowExitPopup(false)} title="Close">&#10005;</span>
-											<div className="exit-popup-title">Parking Charge Details</div>
-											<table className="exit-popup-details-table">
-												<tbody>
-													<tr>
-														<td className="exit-popup-detail-label"><b>Vehicle Number:</b></td>
-														<td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
-													</tr>
-													<tr>
-														<td className="exit-popup-detail-label"><b>Entry Time:</b></td>
-														<td className="exit-popup-detail-value">{selectedVehicle.entryTime}</td>
-													</tr>
-													<tr>
-														<td className="exit-popup-detail-label"><b>Exit Time:</b></td>
-														<td className="exit-popup-detail-value">{selectedVehicle.exitTime}</td>
-													</tr>
-													<tr>
-														<td className="exit-popup-detail-label"><b>Fare:</b></td>
-														<td className="exit-popup-detail-value">₹{selectedVehicle.fare}</td>
-													</tr>
-												</tbody>
-											</table>
-											<div className="exit-popup-payment-method">
-												<label htmlFor="payment-method" className="exit-popup-detail-label">Payment Method:</label>
-												<select
-													id="payment-method"
-													className="exit-popup-payment-dropdown"
-													value={paymentMethod}
-													onChange={e => setPaymentMethod(e.target.value)}
-												>
-													<option value="CASH">CASH</option>
-													<option value="Card">Card</option>
-													<option value="UPI">UPI</option>
-												</select>
-											</div>
-											{paymentMethod === 'UPI' && (
-												<div className="exit-popup-qr-section">
-													<div className="exit-popup-detail-label" style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:</div>
-													<QRCodeSVG
-														value="upi://pay?pa=898100491614-2@axl@upi&pn=LX Parking&am={selectedVehicle.parkingCharge}&cu=INR&tn=Parking%20Fare%20Payment"
-														size={128}
-														bgColor="#fffbe6"
-													 fgColor="#a57b0a"
-														className="exit-popup-qr-code"
-													/>
-												</div>
-											)}
-											<button
-												className="confirm-exit-btn"
-												onClick={handleConfirmExit}
-											>
-												Confirm
-											</button>
-										</div>
-									</>
-								)}
+                                {/* Exit Popup */}
+                                {showExitPopup && selectedVehicle && (
+                                    <>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowExitPopup(false)}></div>
+                                        <div className="exit-popup-card logo-theme">
+                                            <span className="exit-popup-close" onClick={() => setShowExitPopup(false)}
+                                                  title="Close">&#10005;</span>
+                                            <div className="exit-popup-title">Parking Charge Details</div>
+                                            <table className="exit-popup-details-table">
+                                                <tbody>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Vehicle Number:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Entry Time:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.entryTime}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Exit Time:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.exitTime}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Fare:</b></td>
+                                                    <td className="exit-popup-detail-value">₹{selectedVehicle.fare}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            <div className="exit-popup-payment-method">
+                                                <label htmlFor="payment-method" className="exit-popup-detail-label">Payment
+                                                    Method:</label>
+                                                <select
+                                                    id="payment-method"
+                                                    className="exit-popup-payment-dropdown"
+                                                    value={paymentMethod}
+                                                    onChange={e => setPaymentMethod(e.target.value)}
+                                                >
+                                                    <option value="CASH">CASH</option>
+                                                    <option value="Card">Card</option>
+                                                    <option value="UPI">UPI</option>
+                                                </select>
+                                            </div>
+                                            {paymentMethod === 'UPI' && (
+                                                <div className="exit-popup-qr-section">
+                                                    <div className="exit-popup-detail-label"
+                                                         style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:
+                                                    </div>
+                                                    <QRCodeSVG
+                                                        value="upi://pay?pa=898100491614-2@axl@upi&pn=LX Parking&am={selectedVehicle.parkingCharge}&cu=INR&tn=Parking%20Fare%20Payment"
+                                                        size={128}
+                                                        bgColor="#fffbe6"
+                                                        fgColor="#a57b0a"
+                                                        className="exit-popup-qr-code"
+                                                    />
+                                                </div>
+                                            )}
+                                            <button
+                                                className="confirm-exit-btn"
+                                                onClick={handleConfirmExit}
+                                            >
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
 
                                 {/* Check In Popup */}
                                 {showCheckInPopup && (
                                     <>
-                                        <div className="exit-popup-overlay" onClick={() => setShowCheckInPopup(false)}></div>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowCheckInPopup(false)}></div>
                                         <div className="exit-popup-card logo-theme">
-                                            <span className="exit-popup-close" onClick={() => setShowCheckInPopup(false)} title="Close">&#10005;</span>
+                                            <span className="exit-popup-close"
+                                                  onClick={() => setShowCheckInPopup(false)}
+                                                  title="Close">&#10005;</span>
                                             <div className="exit-popup-title">Check In Vehicle</div>
                                             <div className="check-in-form">
                                                 <div className="form-field">
-                                                    <label htmlFor="vehicle-number" className="form-label">Vehicle Number:</label>
+                                                    <label htmlFor="vehicle-number" className="form-label">Vehicle
+                                                        Number:</label>
                                                     <input
                                                         type="text"
                                                         id="vehicle-number"
@@ -787,7 +874,8 @@ const EmployeeDashboard = () => {
                                                     )}
                                                 </div>
                                                 <div className="form-field">
-                                                    <label htmlFor="vehicle-type" className="form-label">Vehicle Type:</label>
+                                                    <label htmlFor="vehicle-type" className="form-label">Vehicle
+                                                        Type:</label>
                                                     <select
                                                         id="vehicle-type"
                                                         name="vehicleType"
@@ -805,7 +893,8 @@ const EmployeeDashboard = () => {
                                                     )}
                                                 </div>
                                                 <div className="form-field">
-                                                    <label htmlFor="parking-type" className="form-label">Parking Type:</label>
+                                                    <label htmlFor="parking-type" className="form-label">Parking
+                                                        Type:</label>
                                                     <select
                                                         id="parking-type"
                                                         name="parkingType"
@@ -823,14 +912,18 @@ const EmployeeDashboard = () => {
                                                 </div>
 
                                                 {/* Parking Lot and Available Slots in horizontal layout */}
-                                                <div style={{ display: 'flex', gap: '15px' }}>
-                                                    <div className="form-field" style={{ flex: 1 }}>
+                                                <div style={{display: 'flex', gap: '15px'}}>
+                                                    <div className="form-field" style={{flex: 1}}>
                                                         <label className="form-label"><b>Parking Lot:</b></label>
                                                         <span className="form-value">{parkingLotName}</span>
                                                     </div>
-                                                    <div className="form-field" style={{ flex: 1, textAlign: 'right' }}>
+                                                    <div className="form-field" style={{flex: 1, textAlign: 'right'}}>
                                                         <label className="form-label"><b>Available Slots:</b></label>
-                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-end'
+                                                        }}>
                                                             <span className="form-value" style={{
                                                                 color: availableSlots[checkInData.vehicleType] < 10 ? '#d32f2f' : '#28a745',
                                                                 fontWeight: 'bold'
@@ -880,69 +973,75 @@ const EmployeeDashboard = () => {
 
                                 {/* Lock Vehicle Popup */}
                                 {showLockPopup && selectedVehicle && (
-									<>
-										<div className="exit-popup-overlay" onClick={() => setShowLockPopup(false)}></div>
-										<div className="exit-popup-card logo-theme">
-											<span className="exit-popup-close" onClick={() => setShowLockPopup(false)} title="Close">&#10005;</span>
-											<div className="exit-popup-title">Lock Vehicle</div>
-											<div className="lock-popup-content">
-												<p>Are you sure you want to lock this vehicle?</p>
-												<div className="form-field">
-													<label htmlFor="lock-reason" className="form-label">Reason for locking:</label>
-													<textarea
-														id="lock-reason"
-														className="form-textarea"
-														value={lockReason}
-														onChange={handleLockReasonChange}
-														rows="4"
-														placeholder="Please provide a detailed reason for locking this vehicle (minimum 50 characters required)"
-													></textarea>
-													<div className="char-counter">
+                                    <>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowLockPopup(false)}></div>
+                                        <div className="exit-popup-card logo-theme">
+                                            <span className="exit-popup-close" onClick={() => setShowLockPopup(false)}
+                                                  title="Close">&#10005;</span>
+                                            <div className="exit-popup-title">Lock Vehicle</div>
+                                            <div className="lock-popup-content">
+                                                <p>Are you sure you want to lock this vehicle?</p>
+                                                <div className="form-field">
+                                                    <label htmlFor="lock-reason" className="form-label">Reason for
+                                                        locking:</label>
+                                                    <textarea
+                                                        id="lock-reason"
+                                                        className="form-textarea"
+                                                        value={lockReason}
+                                                        onChange={handleLockReasonChange}
+                                                        rows="4"
+                                                        placeholder="Please provide a detailed reason for locking this vehicle (minimum 50 characters required)"
+                                                    ></textarea>
+                                                    <div className="char-counter">
 														<span className={charCount < 30 ? 'counter-error' : ''}>
 															{charCount}/150 characters
-															{charCount < 30 ? ` (${30 - charCount} more needed)` : ''}
+                                                            {charCount < 30 ? ` (${30 - charCount} more needed)` : ''}
 														</span>
-													</div>
-													{lockReasonError && (
-														<div className="form-error">{lockReasonError}</div>
-													)}
-												</div>
-											</div>
-											<button
-												className="confirm-exit-btn"
-												onClick={handleLockConfirm}
-											>
-												Confirm Lock
-											</button>
-										</div>
-									</>
-								)}
+                                                    </div>
+                                                    {lockReasonError && (
+                                                        <div className="form-error">{lockReasonError}</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="confirm-exit-btn"
+                                                onClick={handleLockConfirm}
+                                            >
+                                                Confirm Lock
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
 
                                 {/* Vehicle Details Popup (for locked vehicles) */}
                                 {showDetailsPopup && selectedVehicle && (
                                     <>
-                                        <div className="exit-popup-overlay" onClick={() => setShowDetailsPopup(false)}></div>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowDetailsPopup(false)}></div>
                                         <div className="exit-popup-card logo-theme">
-                                            <span className="exit-popup-close" onClick={() => setShowDetailsPopup(false)} title="Close">&#10005;</span>
+                                            <span className="exit-popup-close"
+                                                  onClick={() => setShowDetailsPopup(false)}
+                                                  title="Close">&#10005;</span>
                                             <div className="exit-popup-title">Vehicle Lock Details</div>
                                             <table className="exit-popup-details-table">
                                                 <tbody>
-                                                    <tr>
-                                                        <td className="exit-popup-detail-label"><b>Vehicle Number:</b></td>
-                                                        <td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="exit-popup-detail-label"><b>Entry Time:</b></td>
-                                                        <td className="exit-popup-detail-value">{selectedVehicle.entryTime}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="exit-popup-detail-label"><b>Locked By:</b></td>
-                                                        <td className="exit-popup-detail-value">{selectedVehicle.lockedBy}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="exit-popup-detail-label"><b>Lock Time:</b></td>
-                                                        <td className="exit-popup-detail-value">{selectedVehicle.lockTime}</td>
-                                                    </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Vehicle Number:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Entry Time:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.entryTime}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Locked By:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.lockedBy}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="exit-popup-detail-label"><b>Lock Time:</b></td>
+                                                    <td className="exit-popup-detail-value">{selectedVehicle.lockedTime}</td>
+                                                </tr>
                                                 </tbody>
                                             </table>
                                             <div className="lock-reason-display">
@@ -962,26 +1061,31 @@ const EmployeeDashboard = () => {
                                 {/* Unlock Vehicle Popup with Payment */}
                                 {showUnlockPopup && selectedVehicle && (
                                     <>
-                                        <div className="exit-popup-overlay" onClick={() => setShowUnlockPopup(false)}></div>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowUnlockPopup(false)}></div>
                                         <div className="exit-popup-card logo-theme">
-                                            <span className="exit-popup-close" onClick={() => setShowUnlockPopup(false)} title="Close">&#10005;</span>
+                                            <span className="exit-popup-close" onClick={() => setShowUnlockPopup(false)}
+                                                  title="Close">&#10005;</span>
                                             <div className="exit-popup-title">Unlock Vehicle</div>
                                             <div className="unlock-popup-content">
-                                                <p>To unlock this vehicle, a penalty fee of ₹{unlockFee} must be paid.</p>
+                                                <p>To unlock this vehicle, a penalty fee of ₹{unlockFee} must be
+                                                    paid.</p>
                                                 <table className="exit-popup-details-table">
                                                     <tbody>
-                                                        <tr>
-                                                            <td className="exit-popup-detail-label"><b>Vehicle Number:</b></td>
-                                                            <td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="exit-popup-detail-label"><b>Penalty Fee:</b></td>
-                                                            <td className="exit-popup-detail-value">₹{unlockFee}</td>
-                                                        </tr>
+                                                    <tr>
+                                                        <td className="exit-popup-detail-label"><b>Vehicle Number:</b>
+                                                        </td>
+                                                        <td className="exit-popup-detail-value">{selectedVehicle.vehicleNumber}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="exit-popup-detail-label"><b>Penalty Fee:</b></td>
+                                                        <td className="exit-popup-detail-value">₹{unlockFee}</td>
+                                                    </tr>
                                                     </tbody>
                                                 </table>
                                                 <div className="exit-popup-payment-method">
-                                                    <label htmlFor="unlock-payment-method" className="exit-popup-detail-label">Payment Method:</label>
+                                                    <label htmlFor="unlock-payment-method"
+                                                           className="exit-popup-detail-label">Payment Method:</label>
                                                     <select
                                                         id="unlock-payment-method"
                                                         className="exit-popup-payment-dropdown"
@@ -995,7 +1099,9 @@ const EmployeeDashboard = () => {
                                                 </div>
                                                 {unlockPaymentMethod === 'UPI' && (
                                                     <div className="exit-popup-qr-section">
-                                                        <div className="exit-popup-detail-label" style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:</div>
+                                                        <div className="exit-popup-detail-label"
+                                                             style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:
+                                                        </div>
                                                         <QRCodeSVG
                                                             value={`upi://pay?pa=test@upi&pn=UnlockFee&am=${unlockFee}`}
                                                             size={128}
@@ -1019,13 +1125,17 @@ const EmployeeDashboard = () => {
                                 {/* Subscription Popup */}
                                 {showSubscriptionPopup && (
                                     <>
-                                        <div className="exit-popup-overlay" onClick={() => setShowSubscriptionPopup(false)}></div>
-                                        <div className="exit-popup-card logo-theme" style={{ maxWidth: '500px' }}>
-                                            <span className="exit-popup-close" onClick={() => setShowSubscriptionPopup(false)} title="Close">&#10005;</span>
+                                        <div className="exit-popup-overlay"
+                                             onClick={() => setShowSubscriptionPopup(false)}></div>
+                                        <div className="exit-popup-card logo-theme" style={{maxWidth: '500px'}}>
+                                            <span className="exit-popup-close"
+                                                  onClick={() => setShowSubscriptionPopup(false)}
+                                                  title="Close">&#10005;</span>
                                             <div className="exit-popup-title">Activate Subscription</div>
                                             <div className="subscription-form">
                                                 <div className="form-field">
-                                                    <label htmlFor="subscription-vehicle-number" className="form-label">Vehicle Number:</label>
+                                                    <label htmlFor="subscription-vehicle-number" className="form-label">Vehicle
+                                                        Number:</label>
                                                     <input
                                                         type="text"
                                                         id="subscription-vehicle-number"
@@ -1043,21 +1153,23 @@ const EmployeeDashboard = () => {
                                                         }}
                                                     />
                                                     {subscriptionErrors.vehicleNumber && (
-                                                        <div className="form-error">{subscriptionErrors.vehicleNumber}</div>
+                                                        <div
+                                                            className="form-error">{subscriptionErrors.vehicleNumber}</div>
                                                     )}
                                                 </div>
 
                                                 {/* Horizontal layout for Vehicle Type and Subscription Frequency */}
-                                                <div style={{ display: 'flex', gap: '15px' }}>
-                                                    <div className="form-field" style={{ flex: 1 }}>
-                                                        <label htmlFor="subscription-vehicle-type" className="form-label">Vehicle Type:</label>
+                                                <div style={{display: 'flex', gap: '15px'}}>
+                                                    <div className="form-field" style={{flex: 1}}>
+                                                        <label htmlFor="subscription-vehicle-type"
+                                                               className="form-label">Vehicle Type:</label>
                                                         <select
                                                             id="subscription-vehicle-type"
                                                             name="vehicleType"
                                                             className="form-select"
                                                             value={subscriptionData.vehicleType}
                                                             onChange={handleSubscriptionFormChange}
-                                                            style={{ width: '100%' }}
+                                                            style={{width: '100%'}}
                                                         >
                                                             <option value="Car">Car</option>
                                                             <option value="Bike">Bike</option>
@@ -1065,19 +1177,21 @@ const EmployeeDashboard = () => {
                                                             <option value="SUV">SUV</option>
                                                         </select>
                                                         {subscriptionErrors.vehicleType && (
-                                                            <div className="form-error">{subscriptionErrors.vehicleType}</div>
+                                                            <div
+                                                                className="form-error">{subscriptionErrors.vehicleType}</div>
                                                         )}
                                                     </div>
 
-                                                    <div className="form-field" style={{ flex: 1 }}>
-                                                        <label htmlFor="subscription-frequency" className="form-label">Subscription Frequency:</label>
+                                                    <div className="form-field" style={{flex: 1}}>
+                                                        <label htmlFor="subscription-frequency" className="form-label">Subscription
+                                                            Frequency:</label>
                                                         <select
                                                             id="subscription-frequency"
                                                             name="subscriptionFrequency"
                                                             className="form-select"
                                                             value={subscriptionData.subscriptionFrequency}
                                                             onChange={handleSubscriptionFormChange}
-                                                            style={{ width: '100%' }}
+                                                            style={{width: '100%'}}
                                                         >
                                                             <option value="Monthly">Monthly</option>
                                                             <option value="Quarterly">Quarterly</option>
@@ -1085,13 +1199,15 @@ const EmployeeDashboard = () => {
                                                             <option value="Yearly">Yearly</option>
                                                         </select>
                                                         {subscriptionErrors.subscriptionFrequency && (
-                                                            <div className="form-error">{subscriptionErrors.subscriptionFrequency}</div>
+                                                            <div
+                                                                className="form-error">{subscriptionErrors.subscriptionFrequency}</div>
                                                         )}
                                                     </div>
                                                 </div>
 
                                                 <div className="form-field">
-                                                    <label htmlFor="subscription-type" className="form-label">Subscription Type:</label>
+                                                    <label htmlFor="subscription-type" className="form-label">Subscription
+                                                        Type:</label>
                                                     <select
                                                         id="subscription-type"
                                                         name="subscriptionType"
@@ -1104,7 +1220,8 @@ const EmployeeDashboard = () => {
                                                         <option value="SUPER">SUPER</option>
                                                     </select>
                                                     {subscriptionErrors.subscriptionType && (
-                                                        <div className="form-error">{subscriptionErrors.subscriptionType}</div>
+                                                        <div
+                                                            className="form-error">{subscriptionErrors.subscriptionType}</div>
                                                     )}
                                                 </div>
 
@@ -1114,27 +1231,46 @@ const EmployeeDashboard = () => {
                                                 </div>
 
                                                 {/* Subscription Charge Field */}
-                                                <div className="form-field" style={{ backgroundColor: '#f8f8f8', padding: '10px', borderRadius: '4px', marginTop: '10px' }}>
+                                                <div className="form-field" style={{
+                                                    backgroundColor: '#f8f8f8',
+                                                    padding: '10px',
+                                                    borderRadius: '4px',
+                                                    marginTop: '10px'
+                                                }}>
                                                     <label className="form-label"><b>Subscription Charge:</b></label>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        marginTop: '5px'
+                                                    }}>
                                                         <div>
-                                                            <span className="form-value" style={{ fontSize: '1.1em' }}>
+                                                            <span className="form-value" style={{fontSize: '1.1em'}}>
                                                                 ₹{calculateSubscriptionCharge(
-                                                                    subscriptionData.subscriptionType,
-                                                                    subscriptionData.subscriptionFrequency,
-                                                                    subscriptionData.vehicleType
-                                                                ).monthly}
+                                                                subscriptionData.subscriptionType,
+                                                                subscriptionData.subscriptionFrequency,
+                                                                subscriptionData.vehicleType
+                                                            ).monthly}
                                                             </span>
-                                                            <span style={{ fontSize: '0.9em', color: '#666' }}> / month</span>
+                                                            <span style={{
+                                                                fontSize: '0.9em',
+                                                                color: '#666'
+                                                            }}> / month</span>
                                                         </div>
                                                         <div>
-                                                            <span className="form-label" style={{ fontWeight: 'bold', color: '#a57b0a' }}>Total: </span>
-                                                            <span className="form-value" style={{ fontWeight: 'bold', fontSize: '1.1em', color: '#a57b0a' }}>
+                                                            <span className="form-label" style={{
+                                                                fontWeight: 'bold',
+                                                                color: '#a57b0a'
+                                                            }}>Total: </span>
+                                                            <span className="form-value" style={{
+                                                                fontWeight: 'bold',
+                                                                fontSize: '1.1em',
+                                                                color: '#a57b0a'
+                                                            }}>
                                                                 ₹{calculateSubscriptionCharge(
-                                                                    subscriptionData.subscriptionType,
-                                                                    subscriptionData.subscriptionFrequency,
-                                                                    subscriptionData.vehicleType
-                                                                ).total}
+                                                                subscriptionData.subscriptionType,
+                                                                subscriptionData.subscriptionFrequency,
+                                                                subscriptionData.vehicleType
+                                                            ).total}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -1142,11 +1278,17 @@ const EmployeeDashboard = () => {
                                             </div>
 
                                             {/* Benefits Section */}
-                                            <div className="subscription-benefits" style={{ marginTop: '15px', marginBottom: '15px', border: '1px solid #ddd', padding: '10px', borderRadius: '4px' }}>
-                                                <h4 style={{ marginTop: '0', marginBottom: '10px' }}>Benefits:</h4>
-                                                <ul style={{ paddingLeft: '20px', margin: '0' }}>
+                                            <div className="subscription-benefits" style={{
+                                                marginTop: '15px',
+                                                marginBottom: '15px',
+                                                border: '1px solid #ddd',
+                                                padding: '10px',
+                                                borderRadius: '4px'
+                                            }}>
+                                                <h4 style={{marginTop: '0', marginBottom: '10px'}}>Benefits:</h4>
+                                                <ul style={{paddingLeft: '20px', margin: '0'}}>
                                                     {getSubscriptionBenefits(subscriptionData.subscriptionType).map((benefit, index) => (
-                                                        <li key={index} style={{ marginBottom: '5px' }}>{benefit}</li>
+                                                        <li key={index} style={{marginBottom: '5px'}}>{benefit}</li>
                                                     ))}
                                                 </ul>
                                             </div>
@@ -1160,14 +1302,15 @@ const EmployeeDashboard = () => {
                                         </div>
                                     </>
                                 )}
-							</div>
-                        } />
-					</Routes>
-                    <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
-				</div>
-			} />
-		</Routes>
-	);
+                            </div>
+                        }/>
+                    </Routes>
+                    <Toast show={toast.show} message={toast.message} type={toast.type}
+                           onClose={() => setToast({...toast, show: false})}/>
+                </div>
+            }/>
+        </Routes>
+    );
 };
 
 export default EmployeeDashboard;

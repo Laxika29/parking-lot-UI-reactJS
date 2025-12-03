@@ -244,7 +244,7 @@ const EmployeeDashboard = () => {
             vehicleNumber: checkInData.vehicleNumber,
             vehicleType: checkInData.vehicleType,
             entryTime: new Date().toLocaleString(),
-            allotedBy: employeeName,
+            allotedBy: employeeName.split('@')[0], // Remove domain part from email
             exitBy: '',
             fare: 0, // This would be calculated based on parking type
             exitTime: '',
@@ -280,7 +280,11 @@ const EmployeeDashboard = () => {
 		setVehicles(
 			vehicles.map((v) =>
 				v.vehicleNumber === selectedVehicle.vehicleNumber
-					? { ...v, exitBy: employeeName, exitTime: selectedVehicle.exitTime }
+					? {
+                      ...v,
+                      exitBy: employeeName.split('@')[0], // Remove domain part from email
+                      exitTime: selectedVehicle.exitTime,
+                  }
 					: v
 			)
 		);
@@ -465,11 +469,12 @@ const EmployeeDashboard = () => {
 
     // Fetch currently parked vehicles from the API
     useEffect(() => {
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
         const fetchVehicles = async () => {
             setLoading(true);
             setError('');
             try {
-                const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : '';
                 const response = await fetch('/parkinglot/api/v1/fetch/dashboard/vehicles', {
                     method: 'POST',
                     headers: {
@@ -477,6 +482,13 @@ const EmployeeDashboard = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+
+                if (response.status === 403) {
+                    localStorage.removeItem('employee-auth');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`);
                 }
@@ -539,7 +551,6 @@ const EmployeeDashboard = () => {
 												<th>Vehicle Number</th>
 												<th>Vehicle Type</th>
 												<th>Allotted By</th>
-												<th>Exit By</th>
 												<th>Entry Time</th>
 												<th>Action</th>
 											</tr>
@@ -550,7 +561,6 @@ const EmployeeDashboard = () => {
 													<td>{vehicle.vehicleNumber}</td>
 													<td>{vehicle.vehicleType}</td>
 													<td>{vehicle.allocatedBy}</td>
-													<td>{vehicle.exitBy || '-'}</td>
 													<td>{vehicle.entryTime}</td>
 													<td style={{ textAlign: 'center' }}>
                                                         {vehicle.vehicleLocked ? (

@@ -743,6 +743,82 @@ const EmployeeDashboard = () => {
         }
     };
 
+    // Function to generate a 16-digit numeric transaction ID
+    const generateTransactionId = () => {
+        return Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString();
+    };
+
+    // Function to confirm payment
+    const confirmPayment = async () => {
+        if (!selectedVehicle) {
+            setToast({ show: true, message: 'No vehicle selected for payment.', type: 'error' });
+            return;
+        }
+
+        const transactionId = generateTransactionId();
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
+        const paymentData = {
+            id: selectedVehicle.parkingId,
+            paymentMode: paymentMethod,
+            transactionId: transactionId,
+            paymentAmount: selectedVehicle.paymentAmount,
+            paymentFor: 'PARKING'
+        };
+
+        try {
+            const response = await fetch('/parkinglot/api/v1/confirm-checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.message === 'Payment confirmed!!') {
+                setToast({ show: true, message: 'Payment confirmed successfully!', type: 'success' });
+                await fetchVehicles();
+                setShowExitPopup(false); // Close the exit popup
+            } else {
+                setToast({ show: true, message: data.message || 'Payment confirmation failed.', type: 'error' });
+                await fetchVehicles();
+            }
+        } catch (error) {
+            setToast({ show: true, message: error.message || 'An error occurred during payment.', type: 'error' });
+            await fetchVehicles();
+        }
+    };
+
+    // Function to refresh vehicle data
+    const refreshVehicleData = async () => {
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
+        try {
+            const response = await fetch('/parkinglot/api/v1/fetch/vehicle', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setVehicles(data.vehicles || []);
+        } catch (error) {
+            setToast({ show: true, message: error.message || 'Failed to refresh vehicle data.', type: 'error' });
+        }
+    };
+
     return (
         <Routes>
             <Route path="/*" element={
@@ -895,9 +971,9 @@ const EmployeeDashboard = () => {
                                             )}
                                             <button
                                                 className="confirm-exit-btn"
-                                                onClick={handleConfirmExit}
+                                                onClick={confirmPayment} // Ensure the confirmPayment function is called
                                             >
-                                                Confirm
+                                                Confirm Payment
                                             </button>
                                         </div>
                                     </>

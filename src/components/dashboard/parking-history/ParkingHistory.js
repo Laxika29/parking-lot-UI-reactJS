@@ -1,291 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import './ParkingHistory.css';
 
-const MOCK_VEHICLES = [
-  {
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },
-  {
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },
-  {
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },{
-    vehicleNumber: 'MH12AB1234',
-    vehicleType: 'Car',
-    entryTime: '2025-09-24 09:15:89',
-    allotedBy: 'John Doe',
-    exitTime: '2025-09-24 17:30:90',
-    checkoutBy: 'Jane Smith',
-    paymentMode: 'UPI',
-    paymentAmount: 120,
-    parkingLotName: 'Lot A',
-  },
-  // ... existing vehicle data
-];
-
 const ParkingHistory = ({ sidebarCollapsed }) => {
+  const [parkingHistories, setParkingHistories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10); // Fixed at exactly 10 rows per page
 
+  // Fetch parking history from API
+  useEffect(() => {
+    const fetchParkingHistory = async () => {
+      const token = localStorage.getItem('employee-auth')
+        ? JSON.parse(localStorage.getItem('employee-auth')).token
+        : null;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch('/parkinglot/api/v1/fetch/parking/history', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            parkingId: 202,
+            vehicleType: 'Bike',
+            vehicleNumber: 'DL01AB1260',
+            parkingType: null,
+            paymentFor: 'PARKING',
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setParkingHistories(data.parkingLotHistories || []);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch parking history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParkingHistory();
+  }, []);
+
   // Filter vehicles based on search
-  const filteredVehicles = MOCK_VEHICLES.filter(v =>
-    v.vehicleNumber.toLowerCase().includes(search.toLowerCase())
+  const filteredVehicles = parkingHistories.filter(v =>
+    v.vehicleNo.toLowerCase().includes(search.toLowerCase())
   );
 
   // Reset to first page when search changes
@@ -317,6 +85,14 @@ const ParkingHistory = ({ sidebarCollapsed }) => {
   // Change page
   const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className={`parking-history-container ${sidebarCollapsed ? 'collapsed' : 'expanded'}`}>
@@ -351,14 +127,14 @@ const ParkingHistory = ({ sidebarCollapsed }) => {
             {rowsToDisplay.map((vehicle, index) => (
               vehicle ? (
                 <tr key={`${vehicle.vehicleNumber}-${index}`}>
-                  <td>{vehicle.vehicleNumber}</td>
-                  <td>{vehicle.vehicleType}</td>
+                  <td>{vehicle.vehicleNo}</td>
+                  <td>{vehicle.type}</td>
                   <td>{vehicle.entryTime}</td>
                   <td>{vehicle.allotedBy}</td>
                   <td>{vehicle.exitTime}</td>
                   <td>{vehicle.checkoutBy}</td>
                   <td>{vehicle.paymentMode}</td>
-                  <td>₹{vehicle.paymentAmount}</td>
+                  <td>₹{vehicle.charge}</td>
                 </tr>
               ) : (
                 <tr key={`empty-${index}`}>

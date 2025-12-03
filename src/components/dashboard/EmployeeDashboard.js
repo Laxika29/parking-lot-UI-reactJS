@@ -323,10 +323,47 @@ const EmployeeDashboard = () => {
         }
     };
 
-    const handleExitClick = (vehicle) => {
-        // Set exit time to now for demo
-        setSelectedVehicle({...vehicle, exitTime: new Date().getHours()});
-        setShowExitPopup(true);
+    const handleExitClick = async (vehicle) => {
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
+        const checkoutPayload = {
+            parkingId: vehicle.parkingId,
+            vehicleType: vehicle.vehicleType,
+            vehicleNumber: vehicle.vehicleNumber,
+            parkingType: null,
+            paymentFor: "PARKING"
+        };
+
+        setLoading(true); // Set loading to true before the API call
+        try {
+            const response = await fetch('/parkinglot/api/v1/check-out', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(checkoutPayload),
+            });
+
+            const data = await response.json();
+            console.log(data);
+            if (response.ok) {
+                setSelectedVehicle({
+                    ...vehicle,
+                    parkingCharge: data.parkingCharge,
+                    entryTime: data.entryTime,
+                    exitTime: data.exitTime,
+                });
+                setShowExitPopup(true);
+            } else {
+                setToast({ show: true, message: data.message || 'Failed to fetch checkout details', type: 'error' });
+            }
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            setToast({ show: true, message: 'An unexpected error occurred during checkout', type: 'error' });
+        } finally {
+            setLoading(false); // Set loading to false after the API call
+        }
     };
 
     const handleConfirmExit = () => {
@@ -780,14 +817,12 @@ const EmployeeDashboard = () => {
                                                             <button
                                                                 className="lock-btn"
                                                                 style={{marginRight: '0.5rem'}}
-                                                                disabled={!!vehicle.exitBy}
                                                                 onClick={() => handleLockClick(vehicle)}
                                                             >
                                                                 Lock
                                                             </button>
                                                             <button
                                                                 className="exit-btn"
-                                                                disabled={!!vehicle.exitBy}
                                                                 onClick={() => handleExitClick(vehicle)}
                                                             >
                                                                 Exit
@@ -826,7 +861,7 @@ const EmployeeDashboard = () => {
                                                 </tr>
                                                 <tr>
                                                     <td className="exit-popup-detail-label"><b>Fare:</b></td>
-                                                    <td className="exit-popup-detail-value">₹{selectedVehicle.fare}</td>
+                                                    <td className="exit-popup-detail-value">₹{selectedVehicle.parkingCharge}</td>
                                                 </tr>
                                                 </tbody>
                                             </table>

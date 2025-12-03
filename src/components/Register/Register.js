@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Login/Login.css';
 import parkingLot from '../../parkinglot.jpg';
@@ -15,10 +15,42 @@ const Register = () => {
     confirmPassword: ''
   });
   const [parkingLotValue, setParkingLot] = useState('');
+  const [parkingLots, setParkingLots] = useState([]);
+  const [parkingLotsLoading, setParkingLotsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchParkingLots = async () => {
+      setParkingLotsLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        // The backend example used POST for this endpoint; follow the same method (no body)
+        const res = await fetch(`${API_BASE_URL}/api/v1/fetch/active/parking/lot`, {
+          method: 'POST',
+          headers
+        });
+        const json = await res.json();
+        if (res.ok && json && Array.isArray(json.parkingLots)) {
+          setParkingLots(json.parkingLots);
+        } else {
+          setParkingLots([]);
+          const message = (json && (json.message || json.error)) || 'Failed to load parking lots';
+          setToast({ show: true, message, type: 'error' });
+        }
+      } catch (err) {
+        setParkingLots([]);
+        setToast({ show: true, message: 'Network error while fetching parking lots', type: 'error' });
+      } finally {
+        setParkingLotsLoading(false);
+      }
+    };
+    fetchParkingLots();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -54,15 +86,8 @@ const Register = () => {
     }
     setLoading(true);
 
-    // Map parkingLotValue to parkingLotId
-    const parkingLotMap = {
-      'GNIOT Parking Lot': 2,
-      'DLF Parking': 3,
-      'Spectrum Metro Parking': 4,
-      'Candor Parking': 1,
-      'Logix Parking': 5
-    };
-    const parkingLotId = parkingLotMap[parkingLotValue] || 0;
+    // parkingLotValue holds the selected parkingLot id (string); convert to number
+    const parkingLotId = parseInt(parkingLotValue, 10) || 0;
 
     const payload = {
       fullName: form.name,
@@ -141,12 +166,10 @@ const Register = () => {
               </div>
               <div className="input-group">
                 <select name="parkingLot" value={parkingLotValue} onChange={handleParkingLotChange} required style={{width: '100%', border: 'none', background: 'transparent', fontSize: '1rem', padding: '0.5rem 0'}}>
-                  <option value="" disabled>Select Parking Lot</option>
-                  <option value="GNIOT Parking Lot">GNIOT Parking Lot</option>
-                  <option value="DLF Parking">DLF Parking</option>
-                  <option value="Spectrum Metro Parking">Spectrum Metro Parking</option>
-                  <option value="Candor Parking">Candor Parking</option>
-                  <option value="Logix Parking">Logix Parking</option>
+                  <option value="" disabled>{parkingLotsLoading ? 'Loading parking lots...' : 'Select Parking Lot'}</option>
+                  {parkingLots.map(lot => (
+                    <option key={lot.id} value={String(lot.id)}>{lot.parkingLotName} {lot.address ? `- ${lot.address}` : ''}</option>
+                  ))}
                 </select>
               </div>
               <div className="input-group">

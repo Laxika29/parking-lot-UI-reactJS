@@ -216,7 +216,6 @@ const Subscription = ({ sidebarCollapsed }) => {
   // New state for payment success popup
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [newSubscriptionId, setNewSubscriptionId] = useState('');
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // Function to get subscription benefits based on type
   const getSubscriptionBenefits = (type) => {
@@ -254,7 +253,7 @@ const Subscription = ({ sidebarCollapsed }) => {
   // Function to calculate subscription charge based on type and frequency
   const calculateSubscriptionCharge = (type, frequency, vehicleType) => {
     // Base monthly rates
-    let baseRate = 0;
+    let baseRate;
 
     // Set base rate according to vehicle type
     switch(vehicleType) {
@@ -275,7 +274,7 @@ const Subscription = ({ sidebarCollapsed }) => {
     }
 
     // Multiply by subscription type factor
-    let typeFactor = 1;
+    let typeFactor;
     switch(type) {
       case 'PREMIUM':
         typeFactor = 1.2; // 20% premium
@@ -291,8 +290,8 @@ const Subscription = ({ sidebarCollapsed }) => {
     }
 
     // Calculate based on frequency with discount for longer subscriptions
-    let frequencyFactor = 1;
-    let months = 1;
+    let frequencyFactor;
+    let months;
 
     switch(frequency) {
       case 'Monthly':
@@ -402,23 +401,6 @@ const Subscription = ({ sidebarCollapsed }) => {
     setShowPaymentPopup(true);
   };
 
-  // Handle Payment button click
-  const handlePaymentClick = () => {
-    // Calculate the amount based on subscription data
-    const charge = calculateSubscriptionCharge(
-      subscriptionData.subscriptionType,
-      subscriptionData.subscriptionFrequency,
-      subscriptionData.vehicleType
-    );
-
-    setPaymentData({
-      amount: charge.total,
-      method: 'UPI',
-      referenceId: ''
-    });
-    setShowPaymentPopup(true);
-  };
-
   // Handle Payment form field change
   const handlePaymentFormChange = (e) => {
     const { name, value } = e.target;
@@ -457,7 +439,6 @@ const Subscription = ({ sidebarCollapsed }) => {
 
     // Here you would typically send the payment data to your backend
     // For demo, just show success message and close popup
-    setPaymentSuccess(true);
     setShowPaymentPopup(false);
 
     // Show a success message

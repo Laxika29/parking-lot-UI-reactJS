@@ -7,12 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../Toast';
 import API_BASE_URL from '../../utils/apiConfig';
 
-// Mock employee credentials
+// Mock employee credentials (kept for local fallback/testing if needed)
 const EMPLOYEE_CREDENTIALS = [
   { username: 'user', password: 'pwd', employeeId: 'EMP001', name: 'John Doe', parkingLot: 'GNIOT' },
   { username: 'user1', password: 'pwd', employeeId: 'EMP002', name: 'Jane Smith', parkingLot: 'Mall Of India' },
   { username: 'laxmi', password: 'laxmi', employeeId: 'LX08686', name: 'Laxmi Singh', parkingLot: 'Candor Parking' },
-  // Add more employees as needed
 ];
 
 // Store logged-in employee details
@@ -124,7 +123,6 @@ const Login = () => {
       });
       const json = await res.json();
       if (res.ok) {
-        // Backend expected to reply with something like: { message: 'OTP sent to the email' }
         const message = json.message || json.msg || 'OTP sent to the email';
         showToast(message, 'success');
         setOtpSent(true);
@@ -179,6 +177,61 @@ const Login = () => {
     }
   };
 
+  // New: password-based login that calls backend with otpValidation:false and otpCode:null
+  const passwordLogin = async (username, password) => {
+    if (!username || !password) {
+      setError('Please enter both email/employee id and password');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+          otpValidation: false,
+          otpCode: null
+        })
+      });
+      const json = await res.json();
+      if (res.ok && json && (json.token || json.userId)) {
+        // Successful login via password
+        CredentialStore.clear();
+        CredentialStore.setCredentials(username, password, json.employeeId || '', json.name || '', json.parkingLot || '');
+        showToast('Login successful', 'success');
+        setTimeout(() => navigate('/employee-dashboard'), 600);
+      } else {
+        // Fallback: optionally check local mock credentials for offline testing
+        const found = EMPLOYEE_CREDENTIALS.find(emp => emp.username === username && emp.password === password);
+        if (found) {
+          CredentialStore.clear();
+          CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLot);
+          setError('');
+          navigate('/employee-dashboard');
+        } else {
+          const errMsg = json.message || json.error || 'Invalid credentials';
+          showToast(errMsg, 'error');
+        }
+      }
+    } catch (err) {
+      // On network error, try local mock behavior for developer convenience
+      const found = EMPLOYEE_CREDENTIALS.find(emp => emp.username === username && emp.password === password);
+      if (found) {
+        CredentialStore.clear();
+        CredentialStore.setCredentials(username, password, found.employeeId, found.name, found.parkingLot);
+        setError('');
+        navigate('/employee-dashboard');
+      } else {
+        showToast('Network error while logging in', 'error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="login-outer-container">
       <Toast show={toastShow} message={toastMsg} type={toastType} onClose={() => setToastShow(false)} />
@@ -209,36 +262,20 @@ const Login = () => {
         <div className="login-form-section">
           <form className="login-form" onSubmit={e => {
             e.preventDefault();
+            const username = e.target.elements.username.value;
+            // If OTP mode, handle OTP flows
             if (otpMode) {
-              // If in OTP mode and OTP already sent, treat submit as verify attempt
               if (otpSent) {
                 verifyOtp();
                 return;
               }
-              // otherwise, fallthrough to do nothing (use Send OTP button)
+              // If OTP mode but OTP not sent, do nothing on submit (user should click Send OTP)
               return;
             }
-            // Password based mock login (existing behaviour)
-            const username = e.target.elements.username.value;
-            const password = e.target.elements.password ? e.target.elements.password.value : '';
-            const found = EMPLOYEE_CREDENTIALS.find(emp => emp.username === username && emp.password === password);
-            if (found) {
-              // Clear previous credentials first to refresh the cache
-              CredentialStore.clear();
 
-              // Then set the new credentials
-              CredentialStore.setCredentials(
-                username,
-                password,
-                found.employeeId,
-                found.name,
-                found.parkingLot
-              );
-              setError('');
-              navigate('/employee-dashboard'); // Redirect to employee dashboard
-            } else {
-              setError('Invalid credentials');
-            }
+            // If not in OTP mode, use password-based login that calls backend
+            const password = e.target.elements.password ? e.target.elements.password.value : '';
+            passwordLogin(username, password);
           }}>
             <h2>Login</h2>
             <div className="input-group">
@@ -277,9 +314,10 @@ const Login = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
               <a href="/forget-password" className="forgot-password-link">Forgot password?</a>
               {!otpMode ? (
-                <a href="#" className="forgot-password-link" onClick={(e) => { e.preventDefault(); setOtpMode(true); setOtpSent(false); setOtpCode(''); setError(''); }}>Login via OTP</a>
+                // Replaced href="#" anchor with button to satisfy accessibility/linter rules
+                <button type="button" className="forgot-password-link" onClick={(e) => { e.preventDefault(); setOtpMode(true); setOtpSent(false); setOtpCode(''); setError(''); }}>Login via OTP</button>
               ) : (
-                <a href="#" className="forgot-password-link" onClick={(e) => { e.preventDefault(); setOtpMode(false); setOtpSent(false); setOtpCode(''); setError(''); }}>Login via Password</a>
+                <button type="button" className="forgot-password-link" onClick={(e) => { e.preventDefault(); setOtpMode(false); setOtpSent(false); setOtpCode(''); setError(''); }}>Login via Password</button>
               )}
             </div>
 

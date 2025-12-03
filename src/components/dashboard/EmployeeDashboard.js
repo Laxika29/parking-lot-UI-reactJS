@@ -100,7 +100,7 @@ const EmployeeDashboard = () => {
     // Function to calculate subscription charge based on type and frequency
     const calculateSubscriptionCharge = (type, frequency, vehicleType) => {
         // Base monthly rates
-        let baseRate = 0;
+        let baseRate;
 
         // Set base rate according to vehicle type
         switch(vehicleType) {
@@ -113,15 +113,15 @@ const EmployeeDashboard = () => {
             case 'SUV':
                 baseRate = 1500; // Base rate for SUV
                 break;
-            case 'Truck':
-                baseRate = 2000; // Base rate for truck
+            case 'Heavy Vehicle':
+                baseRate = 2000; // Base rate for Heavy Vehicle
                 break;
             default:
                 baseRate = 1000;
         }
 
         // Multiply by subscription type factor
-        let typeFactor = 1;
+        let typeFactor;
         switch(type) {
             case 'PREMIUM':
                 typeFactor = 1.2; // 20% premium
@@ -137,8 +137,8 @@ const EmployeeDashboard = () => {
         }
 
         // Calculate based on frequency with discount for longer subscriptions
-        let frequencyFactor = 1;
-        let months = 1;
+        let frequencyFactor;
+        let months;
 
         switch(frequency) {
             case 'Monthly':
@@ -176,7 +176,7 @@ const EmployeeDashboard = () => {
     const [showDetailsPopup, setShowDetailsPopup] = useState(false);
     const [showUnlockPopup, setShowUnlockPopup] = useState(false);
     const [unlockPaymentMethod, setUnlockPaymentMethod] = useState('CASH');
-    const [unlockFee, setUnlockFee] = useState(200); // Default unlock fee
+    const unlockFee = 200; // Default unlock fee (read-only constant; no setter used)
 
     // New state for check-in form
     const [checkInData, setCheckInData] = useState({
@@ -189,7 +189,7 @@ const EmployeeDashboard = () => {
     const [availableSlots, setAvailableSlots] = useState({
         Car: 45,
         Bike: 80,
-        Truck: 15,
+        'Heavy Vehicle': 15,
         SUV: 30
     });
 
@@ -200,7 +200,7 @@ const EmployeeDashboard = () => {
         setAvailableSlots({
             Car: Math.floor(Math.random() * 30) + 20, // Random number between 20-50
             Bike: Math.floor(Math.random() * 40) + 50, // Random number between 50-90
-            Truck: Math.floor(Math.random() * 10) + 5,  // Random number between 5-15
+            'Heavy Vehicle': Math.floor(Math.random() * 10) + 5,  // Random number between 5-15
             SUV: Math.floor(Math.random() * 20) + 15   // Random number between 15-35
         });
     };
@@ -665,7 +665,7 @@ const EmployeeDashboard = () => {
                                                     >
                                                         <option value="Car">Car</option>
                                                         <option value="Bike">Bike</option>
-                                                        <option value="Truck">Truck</option>
+                                                        <option value="Heavy Vehicle">Heavy Vehicle</option>
                                                         {/* Add more vehicle types as needed */}
                                                     </select>
                                                     {formErrors.vehicleType && (
@@ -929,7 +929,7 @@ const EmployeeDashboard = () => {
                                                         >
                                                             <option value="Car">Car</option>
                                                             <option value="Bike">Bike</option>
-                                                            <option value="Truck">Truck</option>
+                                                            <option value="Heavy Vehicle">Heavy Vehicle</option>
                                                             <option value="SUV">SUV</option>
                                                         </select>
                                                         {subscriptionErrors.vehicleType && (

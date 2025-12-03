@@ -451,26 +451,47 @@ const EmployeeDashboard = () => {
     };
 
     // Handle Unlock confirmation
-    const handleUnlockConfirm = () => {
-        // Update vehicle locked status
-        setVehicles(
-            vehicles.map((v) =>
-                v.vehicleNumber === selectedVehicle.vehicleNumber
-                    ? {
-                        ...v,
-                        locked: false,
-                        unlockTime: new Date().toLocaleString(),
-                        unlockBy: employeeName,
-                        unlockPaymentMethod: unlockPaymentMethod,
-                        unlockFee: unlockFee
-                    }
-                    : v
-            )
-        );
+    const handleUnlockConfirm = async () => {
+        const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
 
-        // Close popup and reset
-        setShowUnlockPopup(false);
-        setSelectedVehicle(null);
+        const unlockPayload = {
+            parkingId: selectedVehicle.parkingId,
+            lockReason: null,
+            paymentMode: unlockPaymentMethod,
+            paymentAmount: unlockFee
+        };
+
+        setLoading(true); // Set loading to true before the API call
+        try {
+            const response = await fetch('/parkinglot/api/v1/unlock/vehicle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(unlockPayload),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setToast({ show: true, message: data.message || 'Vehicle unlocked successfully', type: 'success' });
+
+                // Fetch updated vehicle list after unlocking
+                await fetchVehicles();
+
+                // Close popup and reset fields
+                setShowUnlockPopup(false);
+                setSelectedVehicle(null);
+            } else {
+                setToast({ show: true, message: data.message || 'Failed to unlock vehicle', type: 'error' });
+            }
+        } catch (error) {
+            console.error('Error unlocking vehicle:', error);
+            setToast({ show: true, message: 'An unexpected error occurred while unlocking the vehicle', type: 'error' });
+        } finally {
+            setLoading(false); // Set loading to false after the API call
+        }
     };
 
     // Handle Subscription button click
@@ -829,7 +850,7 @@ const EmployeeDashboard = () => {
                                                          style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:
                                                     </div>
                                                     <QRCodeSVG
-                                                        value="upi://pay?pa=898100491614-2@axl@upi&pn=LX Parking&am={selectedVehicle.parkingCharge}&cu=INR&tn=Parking%20Fare%20Payment"
+                                                        value="upi://pay?pa=8100491614-2@axl&pn=LX Parking&am={selectedVehicle.parkingCharge}&cu=INR&tn=Parking%20Fare%20Payment"
                                                         size={128}
                                                         bgColor="#fffbe6"
                                                         fgColor="#a57b0a"
@@ -1103,7 +1124,7 @@ const EmployeeDashboard = () => {
                                                              style={{marginBottom: '0.5rem'}}>Scan to pay via UPI:
                                                         </div>
                                                         <QRCodeSVG
-                                                            value={`upi://pay?pa=test@upi&pn=UnlockFee&am=${unlockFee}`}
+                                                            value={`upi://pay?pa=8100491614-2@axl&pn=Lx Parking&am=1&cu=INR&tn=Vehicle%20Unlock%20Penalty%20Payment`}
                                                             size={128}
                                                             bgColor="#fffbe6"
                                                             fgColor="#a57b0a"

@@ -2,161 +2,48 @@ import React, { useState, useEffect } from 'react';
 import '../parking-history/ParkingHistory.css'; // Reuse the same CSS
 import './ParkingStatus.css'; // Import specific styles for parking status
 
-const MOCK_PARKING_STATUS = [
-  {
-    parkingLotId: 'A1',
-    vehicleType: 'Car',
-    totalSpaces: 100,
-    occupiedSpaces: 78,
-    availableSpaces: 22,
-    reservedSpaces: 10,
-    maintenanceSpaces: 2,
-    occupancyRate: '78%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 0.5
-  },
-  {
-    parkingLotId: 'B1',
-    vehicleType: 'Bike',
-    totalSpaces: 150,
-    occupiedSpaces: 150,
-    availableSpaces: 0,
-    reservedSpaces: 15,
-    maintenanceSpaces: 0,
-    occupancyRate: '63%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 1.2
-  },
-  {
-    parkingLotId: 'C1',
-    totalSpaces: 80,
-    vehicleType: 'SUV',
-    occupiedSpaces: 75,
-    availableSpaces: 5,
-    reservedSpaces: 8,
-    maintenanceSpaces: 0,
-    occupancyRate: '94%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 0.8
-  },
-  {
-    parkingLotId: 'D1',
-    vehicleType: 'Car',
-    totalSpaces: 120,
-    occupiedSpaces: 65,
-    availableSpaces: 55,
-    reservedSpaces: 12,
-    maintenanceSpaces: 0,
-    occupancyRate: '54%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 1.7
-  },
-  {
-    parkingLotId: 'E1',
-    vehicleType: 'Bike',
-    totalSpaces: 90,
-    occupiedSpaces: 90,
-    availableSpaces: 0,
-    reservedSpaces: 9,
-    maintenanceSpaces: 0,
-    occupancyRate: '50%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 2.3
-  },
-  {
-    parkingLotId: 'F1',
-    vehicleType: 'SUV',
-    totalSpaces: 200,
-    occupiedSpaces: 185,
-    availableSpaces: 15,
-    reservedSpaces: 20,
-    maintenanceSpaces: 0,
-    occupancyRate: '93%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 0.3
-  },
-  {
-    parkingLotId: 'G1',
-    vehicleType: 'Car',
-    totalSpaces: 75,
-    occupiedSpaces: 30,
-    availableSpaces: 45,
-    reservedSpaces: 7,
-    maintenanceSpaces: 0,
-    occupancyRate: '40%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 3.1
-  },
-  {
-    parkingLotId: 'H1',
-    vehicleType: 'Bike',
-    totalSpaces: 60,
-    occupiedSpaces: 52,
-    availableSpaces: 8,
-    reservedSpaces: 6,
-    maintenanceSpaces: 0,
-    occupancyRate: '87%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 1.9
-  },
-  {
-    parkingLotId: 'I1',
-    vehicleType: 'SUV',
-    totalSpaces: 110,
-    occupiedSpaces: 89,
-    availableSpaces: 21,
-    reservedSpaces: 11,
-    maintenanceSpaces: 0,
-    occupancyRate: '81%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 2.7
-  },
-  {
-    parkingLotId: 'J1',
-    vehicleType: 'Car',
-    totalSpaces: 85,
-    occupiedSpaces: 42,
-    availableSpaces: 43,
-    reservedSpaces: 8,
-    maintenanceSpaces: 0,
-    occupancyRate: '49%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 1.4
-  },
-  {
-    parkingLotId: 'K1',
-    vehicleType: 'Bike',
-    totalSpaces: 130,
-    occupiedSpaces: 118,
-    availableSpaces: 12,
-    reservedSpaces: 13,
-    maintenanceSpaces: 0,
-    occupancyRate: '91%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 0.7
-  },
-  {
-    parkingLotId: 'L1',
-    vehicleType: 'SUV',
-    totalSpaces: 95,
-    occupiedSpaces: 95,
-    availableSpaces: 0,
-    reservedSpaces: 9,
-    maintenanceSpaces: 0,
-    occupancyRate: '71%',
-    lastUpdated: '2025-09-27 14:30:15',
-    awayInKm: 2.5
-  }
-];
-
 const ParkingStatus = ({ sidebarCollapsed }) => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10); // Fixed at exactly 10 rows per page
+  const [parkingData, setParkingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch parking status from API
+  useEffect(() => {
+    const fetchParkingStatus = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/parkinglot/api/v1/fetch/parking/availability', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiRU1QTE9ZRUUiLCJleHBpcmVUaW1lIjoiMjAyNS0xMi0wNFQwNjoyMDo0MS4yMDA2MzEiLCJjcmVhdGVUaW1lIjoiMjAyNS0xMi0wNFQwNTo1MDo0MS4yMDA2MzEiLCJwYXJraW5nTG90SWQiOjIwMywiaWQiOjY1Miwic3ViIjoiYW5hbmQubW9oYW5AZ21haWwuY29tIiwiaWF0IjoxNzY0ODA3NjQxLCJleHAiOjE3NjQ4MDk0NDF9.5OsSG3lQsuDd3ywIwuzXN2oj_zoj-_pPNjQFfSY-Rh0',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setParkingData(data.availableParkingInfoList || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParkingStatus();
+  }, []);
 
   // Filter parking status based on search
-  const filteredStatus = MOCK_PARKING_STATUS.filter(status =>
-    status.parkingLotId.toLowerCase().includes(search.toLowerCase())
+  const filteredStatus = parkingData.filter(status =>
+    status.parkingLotName.toLowerCase().includes(search.toLowerCase())
   );
 
   // Reset to first page when search changes
@@ -189,6 +76,14 @@ const ParkingStatus = ({ sidebarCollapsed }) => {
   const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
+  if (loading) {
+    return <div>Loading parking status...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className={`parking-history-container ${sidebarCollapsed ? 'collapsed' : 'expanded'}`}>
       <h2 className="parking-history-title">Parking Status</h2>
@@ -209,6 +104,7 @@ const ParkingStatus = ({ sidebarCollapsed }) => {
           <thead>
             <tr>
               <th>Parking Lot</th>
+              <th>Address</th>
               <th>Vehicle Type</th>
               <th>Total Spaces</th>
               <th>Occupied</th>
@@ -220,17 +116,18 @@ const ParkingStatus = ({ sidebarCollapsed }) => {
             {rowsToDisplay.map((status, index) => (
               status ? (
                 <tr key={`${status.parkingLotId}-${index}`}>
-                  <td>{status.parkingLotId}</td>
+                  <td>{status.parkingLotName}</td>
+                  <td>{status.address}</td>
                   <td>{status.vehicleType}</td>
-                  <td>{status.totalSpaces}</td>
-                  <td>{status.occupiedSpaces}</td>
+                  <td>{status.totalSpace}</td>
+                  <td>{status.occupiedSpace}</td>
                   <td>
                     <div className="availability-display">
-                      <span className={`availability-indicator ${status.availableSpaces > 0 ? 'available' : 'unavailable'}`}></span>
-                      <span>{status.availableSpaces}</span>
+                      <span className={`availability-indicator ${status.availableSpace > 0 ? 'available' : 'unavailable'}`}></span>
+                      <span>{status.availableSpace}</span>
                     </div>
                   </td>
-                  <td>{status.awayInKm}</td>
+                  <td>{status.distanceInKm}</td>
                 </tr>
               ) : (
                 <tr key={`empty-${index}`}>

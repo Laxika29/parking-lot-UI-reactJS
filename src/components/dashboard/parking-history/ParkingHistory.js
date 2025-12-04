@@ -116,9 +116,7 @@ const ParkingHistory = ({ sidebarCollapsed }) => {
               <th>Vehicle No.</th>
               <th>Vehicle Type</th>
               <th>Entry Time</th>
-              <th>Alloted By</th>
               <th>Exit Time</th>
-              <th>Checkout By</th>
               <th>Payment Mode</th>
               <th>Charge</th>
             </tr>

@@ -541,6 +541,7 @@ const EmployeeDashboard = () => {
             subscriptionFrequency: 'Monthly'
         });
         setShowSubscriptionPopup(true);
+        handleActivateSubscription(); // Ensure the API call is triggered
     };
 
     // Handle Subscription form field change
@@ -816,6 +817,32 @@ const EmployeeDashboard = () => {
             setVehicles(data.vehicles || []);
         } catch (error) {
             setToast({ show: true, message: error.message || 'Failed to refresh vehicle data.', type: 'error' });
+        }
+    };
+
+    // New function to handle subscription activation
+    const handleActivateSubscription = async () => {
+        try {
+            const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
+            const response = await fetch('/parkinglot/api/v1/activate/subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(subscriptionData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to activate subscription: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            setToast({ show: true, message: 'Subscription activated successfully!', type: 'success' });
+            console.log('Activated Subscription:', result);
+        } catch (error) {
+            setToast({ show: true, message: `Error: ${error.message}`, type: 'error' });
         }
     };
 
@@ -1306,7 +1333,6 @@ const EmployeeDashboard = () => {
                                                             <option value="Car">Car</option>
                                                             <option value="Bike">Bike</option>
                                                             <option value="Heavy Vehicle">Heavy Vehicle</option>
-                                                            <option value="SUV">SUV</option>
                                                         </select>
                                                         {subscriptionErrors.vehicleType && (
                                                             <div

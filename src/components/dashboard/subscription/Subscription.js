@@ -664,7 +664,6 @@ const Subscription = ({ sidebarCollapsed }) => {
                     <option value="Car">Car</option>
                     <option value="Bike">Bike</option>
                     <option value="Truck">Truck</option>
-                    <option value="SUV">SUV</option>
                   </select>
                   {subscriptionErrors.vehicleType && (
                     <div className="form-error">{subscriptionErrors.vehicleType}</div>

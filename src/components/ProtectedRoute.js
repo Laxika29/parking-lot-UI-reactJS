@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
   // Read auth token safely from localStorage
   let auth = null;
   try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem('auth') : null;
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('admin-auth') : null;
     if (raw) auth = JSON.parse(raw);
   } catch (e) {
     auth = null;

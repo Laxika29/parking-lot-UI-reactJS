@@ -16,10 +16,12 @@ const ParkingStatus = ({ sidebarCollapsed }) => {
       setLoading(true);
       setError(null);
       try {
+          const token = localStorage.getItem('employee-auth') ? JSON.parse(localStorage.getItem('employee-auth')).token : null;
+
         const response = await fetch('/parkinglot/api/v1/fetch/parking/availability', {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiRU1QTE9ZRUUiLCJleHBpcmVUaW1lIjoiMjAyNS0xMi0wNFQwNjoyMDo0MS4yMDA2MzEiLCJjcmVhdGVUaW1lIjoiMjAyNS0xMi0wNFQwNTo1MDo0MS4yMDA2MzEiLCJwYXJraW5nTG90SWQiOjIwMywiaWQiOjY1Miwic3ViIjoiYW5hbmQubW9oYW5AZ21haWwuY29tIiwiaWF0IjoxNzY0ODA3NjQxLCJleHAiOjE3NjQ4MDk0NDF9.5OsSG3lQsuDd3ywIwuzXN2oj_zoj-_pPNjQFfSY-Rh0',
+              Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({})

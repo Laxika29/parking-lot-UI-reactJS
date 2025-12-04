@@ -130,9 +130,7 @@ const ParkingHistory = ({ sidebarCollapsed }) => {
                   <td>{vehicle.vehicleNo}</td>
                   <td>{vehicle.type}</td>
                   <td>{vehicle.entryTime}</td>
-                  <td>{vehicle.allotedBy}</td>
                   <td>{vehicle.exitTime}</td>
-                  <td>{vehicle.checkoutBy}</td>
                   <td>{vehicle.paymentMode}</td>
                   <td>₹{vehicle.charge}</td>
                 </tr>

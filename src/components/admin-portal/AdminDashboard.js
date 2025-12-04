@@ -190,6 +190,20 @@ const NewParkingLotPopup = ({ open, onClose, onCreate, createLoading = false }) 
 						onChange={handleChange}
 						required
 					/>
+					<input
+						name="longitude"
+						placeholder="Longitude"
+						value={form.longitude}
+						onChange={handleChange}
+						required
+					/>
+					<input
+						name="latitude"
+						placeholder="Latitude"
+						value={form.latitude}
+						onChange={handleChange}
+						required
+					/>
 					{error && <div className="error-msg">{error}</div>}
 					<div className="popup-actions">
 						<button type="button" className="popup-cancel" onClick={onClose} disabled={createLoading}>
@@ -640,6 +654,8 @@ const AdminDashboard = () => {
 				 bikeCapacity: Number(newLot.bike),
 				 carCapacity: Number(newLot.car),
 				 heavyVehicleCapacity: Number(newLot.heavy),
+				 longitude: Number(newLot.longitude),
+				 latitude: Number(newLot.latitude),
 			 };
 
 			 const resp = await fetch(buildApiPath('/parkinglot/api/v1/admin/create/parking'), {

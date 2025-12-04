@@ -541,7 +541,6 @@ const EmployeeDashboard = () => {
             subscriptionFrequency: 'Monthly'
         });
         setShowSubscriptionPopup(true);
-        handleActivateSubscription(); // Ensure the API call is triggered
     };
 
     // Handle Subscription form field change
@@ -608,7 +607,7 @@ const EmployeeDashboard = () => {
         // Here you would typically send the subscription data to your backend
         // For now, let's just log it
         console.log("Subscription Data:", subscriptionData);
-
+        handleActivateSubscription(); // Ensure the API call is triggered
         // Close the popup
         setShowSubscriptionPopup(false);
     };
